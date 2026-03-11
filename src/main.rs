@@ -17,9 +17,7 @@ fn main() {
         return;
     };
 
-    loop {
-        config.tick();
-    }
+    config.run();
 }
 
 fn init_logging() {
@@ -204,6 +202,15 @@ impl Config {
         }
 
         thread::sleep(Duration::from_secs(1));
+    }
+
+    fn run(&self) {
+        log::info!("Starting up");
+        self.reset_state();
+
+        loop {
+            self.tick()
+        }
     }
 }
 
