@@ -3,12 +3,17 @@ name = "greenhouse"
 version = "0.1.0"
 edition = "2024"
 
+[lints.clippy]
+pedantic = "warn"
+unused = { level = "allow", priority = 10 }
+
 [dependencies]
-anyhow = "1.0.102"
-log = "0.4.29"
-rppal = { version = "0.22.1", features = ["embedded-hal"] }
+color-eyre = "0.6.5"
+derive_more = { version = "2.1.1", features = ["constructor", "deref", "display", "from"] }
+rppal = "0.22.1"
 schemars = "1.2.1"
 serde = { version = "1.0.228", features = ["derive"] }
-serde_json = "1.0.149"
 serde_yaml = "0.9.34"
-simple-logging = "2.0.2"
+tokio = { version = "1.50.0", features = ["full"] }
+tracing = "0.1.44"
+tracing-subscriber = "0.3.23"
