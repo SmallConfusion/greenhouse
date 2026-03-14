@@ -1,16 +1,11 @@
-use crate::{
-    peripheral::{
+use crate::peripheral::{
         peripheral_command::PeripheralCommand,
         peripheral_trait::{CommandPreset, Peripheral},
-    },
-    pin::{Pin, PinState},
-};
-use derive_more::{Constructor, Deref, From};
+    };
 use tokio::{
-    sync::watch::{Receiver, Sender, channel},
+    sync::watch::{Sender, channel},
     task::JoinHandle,
 };
-use tracing::{error, trace};
 
 pub struct RunningPeripheral<T: PeripheralCommand> {
     sender: Sender<T>,

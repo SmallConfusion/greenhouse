@@ -2,7 +2,7 @@ use derive_more::Display;
 use rppal::gpio::{Gpio, OutputPin};
 use schemars::JsonSchema;
 use serde::Deserialize;
-use tracing::{Level, debug, error, span, trace};
+use tracing::{debug, error, trace};
 
 #[derive(Debug, Deserialize, JsonSchema, Clone, Copy, Display, PartialEq, Eq)]
 pub enum PinState {
@@ -25,7 +25,7 @@ impl Pin {
                 .get(index)
                 .inspect_err(|e| error!("Cannot get pin {index}: {e}"))
                 .ok()
-                .map(|pin| pin.into_output())
+                .map(rppal::gpio::Pin::into_output)
         })();
 
         if pin.is_some() {
@@ -38,13 +38,10 @@ impl Pin {
     }
 
     pub fn set(&mut self, state: &PinState) {
-        match self.pin.as_mut() {
-            Some(pin) => match state {
-                PinState::Off => pin.set_high(),
-                PinState::On => pin.set_low(),
-            },
-            None => error!("Pin {} is not initialized", self.index),
-        }
+        if let Some(pin) = self.pin.as_mut() { match state {
+            PinState::Off => pin.set_high(),
+            PinState::On => pin.set_low(),
+        } } else { error!("Pin {} is not initialized", self.index) }
 
         trace!("Pin {} set {}", self.index, state);
     }

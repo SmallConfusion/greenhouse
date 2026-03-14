@@ -10,7 +10,7 @@ trait GenericCommand {
 
 impl<T: PeripheralCommand> GenericCommand for CommandPreset<T> {
     fn send(&mut self) {
-        self.send()
+        self.send();
     }
 }
 

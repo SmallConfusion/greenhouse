@@ -1,13 +1,10 @@
-use crate::{
-    peripheral::peripheral_command::PeripheralCommand,
-    pin::{Pin, PinState},
-};
-use derive_more::{Constructor, Deref, From};
+use crate::peripheral::peripheral_command::PeripheralCommand;
+use derive_more::Constructor;
 use tokio::{
-    sync::watch::{Receiver, Sender, channel},
+    sync::watch::{Receiver, Sender},
     task::JoinHandle,
 };
-use tracing::{error, trace};
+use tracing::error;
 
 pub trait Peripheral<T: PeripheralCommand> {
     fn run_loop(self, receiver: Receiver<T>) -> JoinHandle<()>;

@@ -1,22 +1,23 @@
 use std::collections::HashSet;
 
 use crate::{
-    controller::{Controller, StageSet},
+    controller::Controller,
     description::{ControllerDesc, StageSetDesc},
 };
 
 impl Controller {
-    pub fn create_from_desc(mut desc: ControllerDesc) -> Self {
+    #[must_use] 
+    pub fn create_from_desc(_desc: ControllerDesc) -> Self {
         todo!()
     }
 }
 
 impl StageSetDesc {
+    #[must_use] 
     pub fn used_keys(&self) -> HashSet<&String> {
         self.stages
             .iter()
-            .map(|s| s.settings.keys())
-            .flatten()
+            .flat_map(|s| s.settings.keys())
             .collect()
     }
 }

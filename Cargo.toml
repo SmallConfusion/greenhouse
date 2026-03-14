@@ -5,7 +5,6 @@ edition = "2024"
 
 [lints.clippy]
 pedantic = "warn"
-unused = { level = "allow", priority = 10 }
 
 [dependencies]
 color-eyre = "0.6.5"
