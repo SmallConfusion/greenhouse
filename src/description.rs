@@ -5,7 +5,7 @@ use tokio::task::JoinHandle;
 
 use crate::{
     peripheral::{
-        peripheral_command::Peripheral,
+        Peripheral,
         running_peripheral::{GenericPeripheral, RunningPeripheral},
     },
     peripherals::{

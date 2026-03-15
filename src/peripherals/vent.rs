@@ -1,5 +1,5 @@
 use crate::{
-    peripheral::peripheral_command::Peripheral, peripheral::peripheral_command::PeripheralCommand,
+    peripheral::Peripheral, peripheral::peripheral_command::PeripheralCommand,
     peripherals::pin::Pin,
 };
 use derive_more::{Constructor, Deref, From};

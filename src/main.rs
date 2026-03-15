@@ -42,3 +42,10 @@ fn init_logging() {
 
     info!("Initialized logging");
 }
+
+mod condition {
+    pub trait Condition {
+        // TODO: Move to module
+        fn is_met(&self) -> bool;
+    }
+}

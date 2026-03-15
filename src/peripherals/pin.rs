@@ -1,6 +1,4 @@
-use crate::{
-    peripheral::peripheral_command::Peripheral, peripheral::peripheral_command::PeripheralCommand,
-};
+use crate::{peripheral::Peripheral, peripheral::peripheral_command::PeripheralCommand};
 use derive_more::Display;
 use rppal::gpio::{Gpio, OutputPin};
 use schemars::JsonSchema;

@@ -1,6 +1,6 @@
 use crate::peripheral::{
+    Peripheral,
     command_preset::{CommandPreset, GenericCommand},
-    peripheral_command::Peripheral,
 };
 use std::any::Any;
 use tokio::{

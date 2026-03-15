@@ -6,11 +6,6 @@ use std::time::Duration;
 use tokio::task::JoinHandle;
 use tracing::trace;
 
-pub trait Condition {
-    // TODO: Move to module
-    fn is_met(&self) -> bool;
-}
-
 #[derive(Debug, Constructor)]
 pub struct Controller {
     stage_sets: Vec<StageSet>,
