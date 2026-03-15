@@ -7,7 +7,7 @@ pub mod peripheral;
 use crate::{convert::convert_controller, description::ControllerDesc};
 use color_eyre::eyre::Result;
 use std::{io::Read, time::Duration};
-use tracing::{info, level_filters::LevelFilter, trace};
+use tracing::{error, info, level_filters::LevelFilter, trace};
 use tracing_subscriber::FmtSubscriber;
 
 #[tokio::main]
@@ -45,7 +45,7 @@ pub fn get_temperature() -> f32 {
     loop {
         let temp_str = std::fs::read_to_string("temp.txt").unwrap();
         let Ok(r) = temp_str.trim().parse() else {
-            println!("Incorrect");
+            error!("Incorrect temperature {temp_str}");
             continue;
         };
 

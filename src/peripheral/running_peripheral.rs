@@ -16,7 +16,8 @@ pub struct RunningPeripheral<T: Peripheral> {
 
 impl<T: Peripheral> RunningPeripheral<T> {
     pub fn create_from_peripheral(peripheral: T, default: T::Command) -> (Self, JoinHandle<()>) {
-        let (sender, receiver) = channel(default.clone());
+        let (sender, mut receiver) = channel(default.clone());
+        receiver.mark_changed();
         let join = peripheral.run_loop(receiver);
 
         (Self { sender, default }, join)

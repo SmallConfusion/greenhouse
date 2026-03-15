@@ -1,16 +1,22 @@
-use crate::{
-    peripheral::Peripheral, peripheral::implementation::pin::Pin,
-    peripheral::peripheral_command::PeripheralCommand,
+use std::{error::Error, time::Duration};
+
+use crate::peripheral::{
+    Peripheral,
+    implementation::pin::{Pin, PinState},
+    peripheral_command::PeripheralCommand,
 };
 use derive_more::{Constructor, Deref, From};
 use schemars::JsonSchema;
 use serde::Deserialize;
-use tracing::error;
+use tokio::{select, time::Instant};
+use tracing::{error, trace};
 
-#[derive(Debug, Constructor)]
+#[derive(Debug)]
 pub struct Vent {
     on: Pin,
     off: Pin,
+
+    current_state: VentState,
 }
 
 #[derive(Debug, Deserialize, JsonSchema, From, Deref, Clone, Copy)]
@@ -22,7 +28,7 @@ impl Peripheral for Vent {
     type Command = VentState;
 
     fn run_loop(
-        self,
+        mut self,
         mut receiver: tokio::sync::watch::Receiver<Self::Command>,
     ) -> tokio::task::JoinHandle<()> {
         tokio::spawn(async move {
@@ -36,8 +42,41 @@ impl Peripheral for Vent {
                 }
 
                 let new_state = *receiver.borrow();
-                error!("Vent stuff not implemented but {new_state:?} was received");
+                trace!("Vent {self:?} received {new_state:?}");
+
+                let diff = *new_state - *self.current_state;
+                let dist = diff.abs();
+
+                let pin = if diff > 0.0 {
+                    &mut self.on
+                } else {
+                    &mut self.off
+                };
+
+                let start_time = Instant::now();
+                pin.set(&PinState::On);
+
+                select! {
+                    () = tokio::time::sleep(Duration::from_secs_f32(dist)) => (),
+                    _ = receiver.changed() => receiver.mark_changed(),
+                };
+
+                let end_time = Instant::now();
+                pin.set(&PinState::Off);
+
+                let moved_time = end_time - start_time;
+                self.current_state.0 += moved_time.as_secs_f32();
             }
         })
+    }
+}
+
+impl Vent {
+    pub fn new(on: Pin, off: Pin) -> Self {
+        Self {
+            on,
+            off,
+            current_state: 0.0.into(),
+        }
     }
 }

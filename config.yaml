@@ -27,5 +27,5 @@ stage_sets:
           start: 40
           end: 50
         settings:
-          vent0: 100.0
+          vent0: 20.0
           pin1: On
