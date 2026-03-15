@@ -6,20 +6,15 @@ pub mod description;
 pub mod peripheral;
 pub mod peripherals;
 
-use std::{collections::HashMap, time::Duration};
+use std::time::Duration;
 
 use color_eyre::eyre::Result;
-use schemars::{SchemaGenerator, schema_for};
 use tracing::{info, level_filters::LevelFilter};
 use tracing_subscriber::FmtSubscriber;
 
 use crate::{
-    controller::{Controller, StageSet, stage::Stage},
-    description::{ControllerDesc, PeripheralDesc, SettingDesc, StageDesc, StageSetDesc, VentDesc},
-    peripherals::{
-        pin::{self, PinState},
-        vent::VentState,
-    },
+    controller::Controller,
+    description::ControllerDesc,
 };
 
 #[tokio::main]

@@ -1,11 +1,5 @@
-use crate::{
-    controller::stage::Stage,
-    peripheral::{command_preset::CommandPreset, peripheral_command::PeripheralCommand},
-};
-use derive_more::{Constructor, Deref, From};
-use schemars::JsonSchema;
-use serde::Deserialize;
-use std::ops::Range;
+use crate::controller::stage::Stage;
+use derive_more::Constructor;
 
 pub trait Condition {
     fn is_met(&self) -> bool;
@@ -24,10 +18,7 @@ pub struct StageSet {
 pub mod stage {
     use std::fmt::Debug;
 
-    use crate::{
-        controller::Condition,
-        peripheral::{self, command_preset::CommandPreset, peripheral_command::PeripheralCommand},
-    };
+    use crate::peripheral::{command_preset::CommandPreset, peripheral_command::PeripheralCommand};
 
     trait GenericCommand: Debug {
         fn send(&mut self);
@@ -45,7 +36,14 @@ pub mod stage {
         // condition: Box<dyn Condition>,
     }
 
+    impl Default for Stage {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
     impl Stage {
+        #[must_use] 
         pub fn new(//condition: Box<dyn Condition>
         ) -> Self {
             Self {

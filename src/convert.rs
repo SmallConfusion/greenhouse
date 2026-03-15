@@ -1,23 +1,21 @@
 use crate::{
     controller::{Controller, StageSet, stage::Stage},
-    description::{ControllerDesc, PeripheralDesc, SettingDesc, StageSetDesc},
+    description::{ControllerDesc, PeripheralDesc, SettingDesc},
     peripheral::{
-        self,
         command_preset::{CommandPreset, Peripheral},
         peripheral_command::PeripheralCommand,
         running_peripheral::RunningPeripheral,
     },
     peripherals::{
-        pin::{Pin, PinState},
-        vent::{Vent, VentState},
+        pin::Pin,
+        vent::Vent,
     },
 };
 use derive_more::{Constructor, From};
 use std::{
-    any::{self, Any, TypeId, type_name},
-    cell::{Cell, RefCell},
-    collections::{HashMap, HashSet},
-    mem,
+    any::Any,
+    cell::RefCell,
+    collections::HashMap,
     rc::Rc,
 };
 use tokio::sync::watch::Sender;
@@ -91,8 +89,7 @@ impl Controller {
             let used_keys = set
                 .stages
                 .iter()
-                .map(|s| s.settings.keys().cloned())
-                .flatten()
+                .flat_map(|s| s.settings.keys().cloned())
                 .collect::<Vec<String>>();
 
             let stages: Vec<Rc<RefCell<Stage>>> = Vec::new();
@@ -103,7 +100,7 @@ impl Controller {
                 let real_stage = Rc::new(RefCell::new(Stage::new()));
                 stages.push(real_stage.clone());
 
-                for key in used_keys.iter() {
+                for key in &used_keys {
                     let setting = stage.settings.remove(key);
 
                     match setting {
@@ -154,7 +151,7 @@ impl Controller {
                         });
                     }
 
-                    handles.push(join)
+                    handles.push(join);
                 }
 
                 PeripheralDesc::Vent(vent_desc, default) => {
@@ -171,7 +168,7 @@ impl Controller {
                         });
                     }
 
-                    handles.push(join)
+                    handles.push(join);
                 }
             }
         }

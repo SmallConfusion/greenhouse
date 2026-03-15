@@ -50,7 +50,7 @@ impl Pin {
                 PinState::On => pin.set_low(),
             }
         } else {
-            error!("Pin {} is not initialized", self.index)
+            error!("Pin {} is not initialized", self.index);
         }
 
         trace!("Pin {} set {}", self.index, state);
@@ -60,11 +60,11 @@ impl Pin {
 impl Peripheral for Pin {
     type Command = PinState;
 
-    fn run_loop(self, receiver: Receiver<Self::Command>) -> JoinHandle<()> {
+    fn run_loop(self, _receiver: Receiver<Self::Command>) -> JoinHandle<()> {
         tokio::spawn(async move {
             loop {
                 error!("Not implemented");
-                tokio::time::sleep(Duration::from_hours(1)).await
+                tokio::time::sleep(Duration::from_hours(1)).await;
             }
         })
     }

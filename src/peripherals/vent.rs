@@ -8,9 +8,8 @@ use tracing::error;
 use crate::{
     peripheral::{
         command_preset::Peripheral, peripheral_command::PeripheralCommand,
-        running_peripheral::RunningPeripheral,
     },
-    peripherals::pin::{Pin, PinState},
+    peripherals::pin::Pin,
 };
 
 #[derive(Debug, Constructor)]
@@ -29,12 +28,12 @@ impl Peripheral for Vent {
 
     fn run_loop(
         self,
-        receiver: tokio::sync::watch::Receiver<Self::Command>,
+        _receiver: tokio::sync::watch::Receiver<Self::Command>,
     ) -> tokio::task::JoinHandle<()> {
         tokio::spawn(async move {
             loop {
                 error!("Not implemented");
-                tokio::time::sleep(Duration::from_hours(1)).await
+                tokio::time::sleep(Duration::from_hours(1)).await;
             }
         })
     }
