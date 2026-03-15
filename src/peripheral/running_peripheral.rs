@@ -1,9 +1,6 @@
-use crate::{
-    controller::stage::GenericCommand,
-    peripheral::{
-        command_preset::{CommandPreset, GenericPeripheral},
-        peripheral_command::Peripheral,
-    },
+use crate::peripheral::{
+    command_preset::{CommandPreset, GenericCommand},
+    peripheral_command::Peripheral,
 };
 use std::any::Any;
 use tokio::{
@@ -24,6 +21,10 @@ impl<T: Peripheral> RunningPeripheral<T> {
 
         (Self { sender, default }, join)
     }
+}
+
+pub trait GenericPeripheral {
+    fn create_command(&self, command: Option<Box<dyn Any>>) -> Box<dyn GenericCommand>;
 }
 
 impl<T: Peripheral> GenericPeripheral for RunningPeripheral<T> {

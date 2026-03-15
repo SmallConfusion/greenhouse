@@ -1,9 +1,6 @@
-use crate::{
-    controller::stage::GenericCommand,
-    peripheral::peripheral_command::PeripheralCommand,
-};
+use crate::peripheral::peripheral_command::PeripheralCommand;
 use derive_more::Constructor;
-use std::{any::Any, fmt::Debug};
+use std::fmt::Debug;
 use tokio::sync::watch::Sender;
 use tracing::error;
 
@@ -21,6 +18,12 @@ impl<T: PeripheralCommand> CommandPreset<T> {
     }
 }
 
-pub trait GenericPeripheral {
-    fn create_command(&self, command: Option<Box<dyn Any>>) -> Box<dyn GenericCommand>;
+pub trait GenericCommand: Debug {
+    fn send(&mut self);
+}
+
+impl<T: PeripheralCommand> GenericCommand for CommandPreset<T> {
+    fn send(&mut self) {
+        self.send();
+    }
 }

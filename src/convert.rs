@@ -5,48 +5,46 @@ use crate::{
 use std::collections::{HashMap, HashSet};
 use tracing::error;
 
-impl Controller {
-    pub fn convert(desc: ControllerDesc) -> Self {
-        let peripherals = desc
-            .peripherals
-            .into_iter()
-            .map(|(name, desc)| (name, desc.to_generic_real()))
-            .collect::<HashMap<_, _>>();
+pub fn convert_controller(desc: ControllerDesc) -> Controller {
+    let peripherals = desc
+        .peripherals
+        .into_iter()
+        .map(|(name, desc)| (name, desc.to_generic_real()))
+        .collect::<HashMap<_, _>>();
 
-        let mut stage_sets = Vec::new();
+    let mut stage_sets = Vec::new();
 
-        for stage_set in desc.stage_sets {
-            let used_names = stage_set
-                .stages
+    for stage_set in desc.stage_sets {
+        let used_names = stage_set
+            .stages
+            .iter()
+            .flat_map(|s| s.settings.keys().cloned())
+            .collect::<HashSet<_>>();
+
+        let mut stages = Vec::new();
+
+        for mut stage in stage_set.stages {
+            let stage_commands = used_names
                 .iter()
-                .flat_map(|s| s.settings.keys().cloned())
-                .collect::<HashSet<_>>();
+                .filter_map(|name| {
+                    let value = stage.settings.remove(name).map(SettingDesc::into_any);
+                    let preset = peripherals.get(name).map(|(p, _)| p.create_command(value)); // TODO: This shit is smart and unreadable
 
-            let mut stages = Vec::new();
+                    if preset.is_none() {
+                        error!("No peripheral with the name {name} is defined");
+                    }
 
-            for mut stage in stage_set.stages {
-                let stage_commands = used_names
-                    .iter()
-                    .filter_map(|name| {
-                        let value = stage.settings.remove(name).map(SettingDesc::into_any);
-                        let preset = peripherals.get(name).map(|(p, _)| p.create_command(value)); // TODO: This shit is smart and unreadable
+                    preset
+                })
+                .collect::<Vec<_>>();
 
-                        if preset.is_none() {
-                            error!("No peripheral with the name {name} is defined");
-                        }
-
-                        preset
-                    })
-                    .collect::<Vec<_>>();
-
-                stages.push(Stage::new(stage_commands));
-            }
-
-            stage_sets.push(StageSet::new(stages));
+            stages.push(Stage::new(stage_commands));
         }
 
-        let joins = peripherals.into_values().map(|(_, join)| join).collect();
-
-        Self::new(stage_sets, joins)
+        stage_sets.push(StageSet::new(stages));
     }
+
+    let joins = peripherals.into_values().map(|(_, join)| join).collect();
+
+    Controller::new(stage_sets, joins)
 }

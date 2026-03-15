@@ -1,18 +1,14 @@
-#![allow(dead_code)]
-
 pub mod controller;
 pub mod convert;
 pub mod description;
 pub mod peripheral;
 pub mod peripherals;
 
-use std::time::Duration;
-
+use crate::{convert::convert_controller, description::ControllerDesc};
 use color_eyre::eyre::Result;
+use std::time::Duration;
 use tracing::{info, level_filters::LevelFilter};
 use tracing_subscriber::FmtSubscriber;
-
-use crate::{controller::Controller, description::ControllerDesc};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -29,7 +25,7 @@ async fn main() -> Result<()> {
     //     serde_json::to_string(&schema_for!(ControllerDesc)).unwrap()
     // );
 
-    let c = Controller::convert(desc);
+    let c = convert_controller(desc);
     c.run().await;
 
     tokio::time::sleep(Duration::from_secs(10)).await;
