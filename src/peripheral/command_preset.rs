@@ -18,7 +18,7 @@ impl<T: PeripheralCommand> CommandPreset<T> {
     }
 }
 
-pub trait GenericCommand: Debug {
+pub trait GenericCommand: Debug + Send {
     fn send(&mut self);
 }
 

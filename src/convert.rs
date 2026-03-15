@@ -1,5 +1,5 @@
 use crate::{
-    controller::{Controller, StageSet, stage::Stage},
+    controller::{Controller, stage::Stage, stage_set::StageSet},
     description::{ControllerDesc, SettingDesc},
 };
 use std::collections::{HashMap, HashSet};
@@ -22,26 +22,37 @@ pub fn convert_controller(desc: ControllerDesc) -> Controller {
             .collect::<HashSet<_>>();
 
         let mut stages = Vec::new();
+        let mut default_commands = Vec::new();
 
         for mut stage in stage_set.stages {
-            let stage_commands = used_names
-                .iter()
-                .filter_map(|name| {
-                    let value = stage.settings.remove(name).map(SettingDesc::into_any);
-                    let preset = peripherals.get(name).map(|(p, _)| p.create_command(value)); // TODO: This shit is smart and unreadable
+            let mut stage_commands = Vec::new();
 
-                    if preset.is_none() {
-                        error!("No peripheral with the name {name} is defined");
-                    }
+            for name in &used_names {
+                let Some((peripheral, _handle)) = peripherals.get(name) else {
+                    error!("Peripheral {name} is not defined");
+                    continue;
+                };
 
-                    preset
-                })
-                .collect::<Vec<_>>();
+                let value = stage.settings.remove(name);
+                let generic_value = value.map(SettingDesc::into_any);
 
-            stages.push(Stage::new(stage_commands));
+                let command = peripheral.create_command(generic_value);
+                stage_commands.push(command);
+
+                default_commands.push(peripheral.create_command(None));
+            }
+
+            stages.push(Stage::new(
+                stage_commands,
+                Some(stage.condition.into_generic()),
+                None,
+            ));
         }
 
-        stage_sets.push(StageSet::new(stages));
+        stage_sets.push(StageSet::new(
+            stages,
+            Stage::new(default_commands, None, None),
+        ));
     }
 
     let joins = peripherals.into_values().map(|(_, join)| join).collect();

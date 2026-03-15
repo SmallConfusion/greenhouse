@@ -10,6 +10,8 @@ must_use_candidate = { level = "allow", priority = 1 }
 [dependencies]
 color-eyre = "0.6.5"
 derive_more = { version = "2.1.1", features = ["constructor", "deref", "display", "from"] }
+futures = "0.3.32"
+never = "0.1.0"
 rppal = "0.22.1"
 schemars = "1.2.1"
 serde = { version = "1.0.228", features = ["derive"] }

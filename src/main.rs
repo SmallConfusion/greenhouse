@@ -1,5 +1,4 @@
 pub mod condition;
-pub mod conditions;
 pub mod controller;
 pub mod convert;
 pub mod description;
@@ -7,8 +6,8 @@ pub mod peripheral;
 
 use crate::{convert::convert_controller, description::ControllerDesc};
 use color_eyre::eyre::Result;
-use std::time::Duration;
-use tracing::{info, level_filters::LevelFilter};
+use std::{io::Read, time::Duration};
+use tracing::{info, level_filters::LevelFilter, trace};
 use tracing_subscriber::FmtSubscriber;
 
 #[tokio::main]
@@ -29,8 +28,6 @@ async fn main() -> Result<()> {
     let c = convert_controller(desc);
     c.run().await;
 
-    tokio::time::sleep(Duration::from_secs(10)).await;
-
     Ok(())
 }
 
@@ -42,4 +39,18 @@ fn init_logging() {
     tracing::subscriber::set_global_default(subscriber).unwrap();
 
     info!("Initialized logging");
+}
+
+pub fn get_temperature() -> f32 {
+    loop {
+        let temp_str = std::fs::read_to_string("temp.txt").unwrap();
+        let Ok(r) = temp_str.trim().parse() else {
+            println!("Incorrect");
+            continue;
+        };
+
+        trace!("Got temperature {r}");
+
+        return r;
+    }
 }

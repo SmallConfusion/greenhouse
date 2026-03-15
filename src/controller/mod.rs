@@ -1,10 +1,11 @@
 pub mod stage;
+pub mod stage_set;
 
-use crate::controller::stage::Stage;
+use crate::controller::stage_set::StageSet;
 use derive_more::Constructor;
-use std::time::Duration;
+use futures::{StreamExt, stream::FuturesUnordered};
 use tokio::task::JoinHandle;
-use tracing::trace;
+use tracing::error;
 
 #[derive(Debug, Constructor)]
 pub struct Controller {
@@ -14,20 +15,20 @@ pub struct Controller {
 
 impl Controller {
     pub async fn run(mut self) {
-        for stage_set in &mut self.stage_sets {
-            for stage in &mut stage_set.set {
-                // TODO: Replace with an actual run
-                stage.enter();
-            }
+        for set in self.stage_sets {
+            self.join_handles.push(set.run());
         }
 
-        tokio::time::sleep(Duration::from_secs(2)).await;
+        let mut futures = FuturesUnordered::new();
 
-        trace!("Done running");
+        for h in self.join_handles {
+            futures.push(h);
+        }
+
+        futures.next().await;
+
+        error!(
+            "One of our async tasks has ended. This could be because a defined pin was not used or it could be because of a horrible error"
+        );
     }
-}
-
-#[derive(Debug, Constructor)]
-pub struct StageSet {
-    set: Vec<Stage>,
 }

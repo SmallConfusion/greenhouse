@@ -1,10 +1,13 @@
-use crate::peripheral::{
-    Peripheral,
-    implementation::{
-        pin::{Pin, PinState},
-        vent::{Vent, VentState},
+use crate::{
+    condition::{Condition, implementation::temperature::TemperatureRange},
+    peripheral::{
+        Peripheral,
+        implementation::{
+            pin::{Pin, PinState},
+            vent::{Vent, VentState},
+        },
+        running_peripheral::{GenericPeripheral, RunningPeripheral},
     },
-    running_peripheral::{GenericPeripheral, RunningPeripheral},
 };
 use schemars::JsonSchema;
 use serde::Deserialize;
@@ -82,6 +85,14 @@ impl SettingDesc {
         match self {
             SettingDesc::Pin(v) => Box::new(v),
             SettingDesc::Vent(v) => Box::new(v),
+        }
+    }
+}
+
+impl ConditionDesc {
+    pub fn into_generic(self) -> Box<dyn Condition> {
+        match self {
+            ConditionDesc::TempRange(range) => Box::new(TemperatureRange::new(range)),
         }
     }
 }

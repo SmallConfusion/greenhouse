@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=config.schema.json
+
+peripherals:
+  pin0: [0, Off]
+  pin1: [1, Off]
+  vent0:
+    - off: 3
+      on: 4
+    - 10
+
+stage_sets:
+  - stages:
+      - condition:
+          start: 30
+          end: 40
+        settings:
+          pin1: On
+
+      - condition:
+          start: 20
+          end: 30
+        settings:
+          pin0: On
+
+  - stages:
+      - condition:
+          start: 40
+          end: 50
+        settings:
+          vent0: 100.0
+          pin1: On
