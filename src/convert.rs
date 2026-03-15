@@ -45,11 +45,7 @@ impl Controller {
             stage_sets.push(StageSet::new(stages));
         }
 
-        let joins = peripherals
-            .into_values()
-            .into_iter()
-            .map(|(_, join)| join)
-            .collect();
+        let joins = peripherals.into_values().map(|(_, join)| join).collect();
 
         Self::new(stage_sets, joins)
     }
