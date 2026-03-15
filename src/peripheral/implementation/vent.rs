@@ -1,6 +1,6 @@
 use crate::{
-    peripheral::Peripheral, peripheral::peripheral_command::PeripheralCommand,
-    peripherals::pin::Pin,
+    peripheral::Peripheral, peripheral::implementation::pin::Pin,
+    peripheral::peripheral_command::PeripheralCommand,
 };
 use derive_more::{Constructor, Deref, From};
 use schemars::JsonSchema;

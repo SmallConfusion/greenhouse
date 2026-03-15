@@ -1,18 +1,15 @@
+use crate::peripheral::{
+    Peripheral,
+    implementation::{
+        pin::{Pin, PinState},
+        vent::{Vent, VentState},
+    },
+    running_peripheral::{GenericPeripheral, RunningPeripheral},
+};
 use schemars::JsonSchema;
 use serde::Deserialize;
 use std::{any::Any, collections::HashMap, ops::Range};
 use tokio::task::JoinHandle;
-
-use crate::{
-    peripheral::{
-        Peripheral,
-        running_peripheral::{GenericPeripheral, RunningPeripheral},
-    },
-    peripherals::{
-        pin::{Pin, PinState},
-        vent::{Vent, VentState},
-    },
-};
 
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct ControllerDesc {

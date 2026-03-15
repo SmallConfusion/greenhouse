@@ -1,8 +1,9 @@
+pub mod condition;
+pub mod conditions;
 pub mod controller;
 pub mod convert;
 pub mod description;
 pub mod peripheral;
-pub mod peripherals;
 
 use crate::{convert::convert_controller, description::ControllerDesc};
 use color_eyre::eyre::Result;
@@ -41,11 +42,4 @@ fn init_logging() {
     tracing::subscriber::set_global_default(subscriber).unwrap();
 
     info!("Initialized logging");
-}
-
-mod condition {
-    pub trait Condition {
-        // TODO: Move to module
-        fn is_met(&self) -> bool;
-    }
 }
