@@ -60,11 +60,20 @@ impl Pin {
 impl Peripheral for Pin {
     type Command = PinState;
 
-    fn run_loop(self, _receiver: Receiver<Self::Command>) -> JoinHandle<()> {
+    fn run_loop(mut self, mut receiver: Receiver<Self::Command>) -> JoinHandle<()> {
         tokio::spawn(async move {
             loop {
-                error!("Not implemented");
-                tokio::time::sleep(Duration::from_hours(1)).await;
+                if let Err(err) = receiver.changed().await {
+                    error!(
+                        "Pin {}'s async loop receiver returned an error: {err}",
+                        self.index
+                    );
+                    return;
+                }
+
+                let new = receiver.borrow();
+                trace!("Pin {} recieved command {:?}", self.index, *new);
+                self.set(&*new);
             }
         })
     }

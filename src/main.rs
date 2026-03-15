@@ -12,10 +12,7 @@ use color_eyre::eyre::Result;
 use tracing::{info, level_filters::LevelFilter};
 use tracing_subscriber::FmtSubscriber;
 
-use crate::{
-    controller::Controller,
-    description::ControllerDesc,
-};
+use crate::{controller::Controller, description::ControllerDesc};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -33,12 +30,9 @@ async fn main() -> Result<()> {
     // );
 
     let c = Controller::convert(desc);
+    c.run().await;
 
-    tokio::time::sleep(Duration::from_secs(1)).await;
-
-    dbg!(c);
-
-    tokio::time::sleep(Duration::from_secs(1)).await;
+    tokio::time::sleep(Duration::from_secs(10)).await;
 
     Ok(())
 }
