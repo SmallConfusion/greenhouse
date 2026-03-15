@@ -1,41 +1,61 @@
-use crate::peripheral::{peripheral_command::PeripheralCommand, peripheral_trait::CommandPreset};
-use derive_more::{Deref, From};
+use crate::{
+    controller::stage::Stage,
+    peripheral::{command_preset::CommandPreset, peripheral_command::PeripheralCommand},
+};
+use derive_more::{Constructor, Deref, From};
 use schemars::JsonSchema;
 use serde::Deserialize;
 use std::ops::Range;
 
-trait GenericCommand {
-    fn send(&mut self);
-}
-
-impl<T: PeripheralCommand> GenericCommand for CommandPreset<T> {
-    fn send(&mut self) {
-        self.send();
-    }
-}
-
 pub trait Condition {
-    fn can_enter(&self) -> bool;
-    fn can_exit(&self) -> bool;
-    fn needs_exit(&self) -> bool;
+    fn is_met(&self) -> bool;
 }
 
+#[derive(Debug, Constructor)]
 pub struct Controller {
     stage_sets: Vec<StageSet>,
 }
 
+#[derive(Debug, Constructor)]
 pub struct StageSet {
     set: Vec<Stage>,
 }
 
-pub struct Stage {
-    entry: Vec<Box<dyn GenericCommand>>,
-    condition: Box<dyn Condition>,
-}
+pub mod stage {
+    use std::fmt::Debug;
 
-pub struct TempRange {
-    range: Range<f32>,
-}
+    use crate::{
+        controller::Condition,
+        peripheral::{self, command_preset::CommandPreset, peripheral_command::PeripheralCommand},
+    };
 
-#[derive(Debug, Deserialize, JsonSchema, From, Deref)]
-pub struct VentState(pub f32);
+    trait GenericCommand: Debug {
+        fn send(&mut self);
+    }
+
+    impl<T: PeripheralCommand> GenericCommand for CommandPreset<T> {
+        fn send(&mut self) {
+            self.send();
+        }
+    }
+
+    #[derive(Debug)]
+    pub struct Stage {
+        entry: Vec<Box<dyn GenericCommand>>,
+        // condition: Box<dyn Condition>,
+    }
+
+    impl Stage {
+        pub fn new(//condition: Box<dyn Condition>
+        ) -> Self {
+            Self {
+                // condition,
+                entry: Vec::new(),
+            }
+        }
+
+        pub fn add_command<T: PeripheralCommand + 'static>(&mut self, command: CommandPreset<T>) {
+            self.entry.push(Box::new(command));
+        }
+    }
+}

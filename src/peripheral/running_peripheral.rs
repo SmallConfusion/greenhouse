@@ -1,19 +1,19 @@
 use crate::peripheral::{
-        peripheral_command::PeripheralCommand,
-        peripheral_trait::{CommandPreset, Peripheral},
-    };
+    command_preset::{CommandPreset, Peripheral},
+    peripheral_command::PeripheralCommand,
+};
 use tokio::{
     sync::watch::{Sender, channel},
     task::JoinHandle,
 };
 
 pub struct RunningPeripheral<T: PeripheralCommand> {
-    sender: Sender<T>,
-    join: JoinHandle<()>,
+    pub sender: Sender<T>,
+    pub join: JoinHandle<()>,
 }
 
 impl<T: PeripheralCommand> RunningPeripheral<T> {
-    pub fn create_from_peripheral(peripheral: impl Peripheral<T>, default: T) -> Self {
+    pub fn create_from_peripheral(peripheral: impl Peripheral<Command = T>, default: T) -> Self {
         let (sender, receiver) = channel(default);
         let join = peripheral.run_loop(receiver);
 

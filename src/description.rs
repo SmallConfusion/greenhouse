@@ -2,7 +2,7 @@ use schemars::JsonSchema;
 use serde::Deserialize;
 use std::{collections::HashMap, ops::Range};
 
-use crate::{controller::VentState, pin::PinState};
+use crate::peripherals::{pin::PinState, vent::VentState};
 
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct ControllerDesc {
@@ -11,6 +11,7 @@ pub struct ControllerDesc {
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]
+#[serde(untagged)]
 pub enum PeripheralDesc {
     Pin(u8, PinState),
     Vent(VentDesc, VentState),
@@ -34,12 +35,14 @@ pub struct StageDesc {
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]
+#[serde(untagged)]
 pub enum SettingDesc {
     Pin(PinState),
     Vent(VentState),
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]
+#[serde(untagged)]
 pub enum ConditionDesc {
     TempRange(Range<f32>),
 }

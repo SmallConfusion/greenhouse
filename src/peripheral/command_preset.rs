@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use crate::peripheral::peripheral_command::PeripheralCommand;
 use derive_more::Constructor;
 use tokio::{
@@ -6,11 +8,12 @@ use tokio::{
 };
 use tracing::error;
 
-pub trait Peripheral<T: PeripheralCommand> {
-    fn run_loop(self, receiver: Receiver<T>) -> JoinHandle<()>;
+pub trait Peripheral: Debug {
+    type Command: PeripheralCommand;
+    fn run_loop(self, receiver: Receiver<Self::Command>) -> JoinHandle<()>;
 }
 
-#[derive(Constructor)]
+#[derive(Debug, Constructor)]
 pub struct CommandPreset<T: PeripheralCommand> {
     sender: Sender<T>,
     value: T,

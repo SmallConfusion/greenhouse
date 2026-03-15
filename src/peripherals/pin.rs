@@ -1,7 +1,11 @@
+use std::time::Duration;
+
+use crate::peripheral::{command_preset::Peripheral, peripheral_command::PeripheralCommand};
 use derive_more::Display;
 use rppal::gpio::{Gpio, OutputPin};
 use schemars::JsonSchema;
 use serde::Deserialize;
+use tokio::{sync::watch::Receiver, task::JoinHandle};
 use tracing::{debug, error, trace};
 
 #[derive(Debug, Deserialize, JsonSchema, Clone, Copy, Display, PartialEq, Eq)]
@@ -9,6 +13,8 @@ pub enum PinState {
     Off,
     On,
 }
+
+impl PeripheralCommand for PinState {}
 
 #[derive(Debug)]
 pub struct Pin {
@@ -38,11 +44,28 @@ impl Pin {
     }
 
     pub fn set(&mut self, state: &PinState) {
-        if let Some(pin) = self.pin.as_mut() { match state {
-            PinState::Off => pin.set_high(),
-            PinState::On => pin.set_low(),
-        } } else { error!("Pin {} is not initialized", self.index) }
+        if let Some(pin) = self.pin.as_mut() {
+            match state {
+                PinState::Off => pin.set_high(),
+                PinState::On => pin.set_low(),
+            }
+        } else {
+            error!("Pin {} is not initialized", self.index)
+        }
 
         trace!("Pin {} set {}", self.index, state);
+    }
+}
+
+impl Peripheral for Pin {
+    type Command = PinState;
+
+    fn run_loop(self, receiver: Receiver<Self::Command>) -> JoinHandle<()> {
+        tokio::spawn(async move {
+            loop {
+                error!("Not implemented");
+                tokio::time::sleep(Duration::from_hours(1)).await
+            }
+        })
     }
 }
