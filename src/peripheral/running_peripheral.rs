@@ -29,13 +29,12 @@ impl<T: Peripheral> RunningPeripheral<T> {
 impl<T: Peripheral> GenericPeripheral for RunningPeripheral<T> {
     fn create_command(&self, command: Option<Box<dyn Any>>) -> Box<dyn GenericCommand> {
         let new_value = command
-            .map(|c| {
+            .and_then(|c| {
                 c.downcast::<T::Command>()
                     .inspect_err(|_e| error!("Mismatched types"))
                     .map(|c| *c)
                     .ok()
             })
-            .flatten()
             .unwrap_or(self.default.clone());
 
         let preset = CommandPreset::new(self.sender.clone(), new_value);

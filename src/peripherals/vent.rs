@@ -5,7 +5,6 @@ use crate::{
 use derive_more::{Constructor, Deref, From};
 use schemars::JsonSchema;
 use serde::Deserialize;
-use std::time::Duration;
 use tracing::error;
 
 #[derive(Debug, Constructor)]

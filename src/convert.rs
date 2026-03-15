@@ -1,25 +1,9 @@
 use crate::{
-    controller::{
-        Controller, StageSet,
-        stage::{self, Stage},
-    },
-    description::{ControllerDesc, PeripheralDesc, SettingDesc},
-    peripheral::{
-        command_preset::{CommandPreset, GenericPeripheral},
-        peripheral_command::PeripheralCommand,
-        running_peripheral::RunningPeripheral,
-    },
-    peripherals::{pin::Pin, vent::Vent},
+    controller::{Controller, StageSet, stage::Stage},
+    description::{ControllerDesc, SettingDesc},
 };
-use derive_more::{Constructor, From};
-use std::{
-    any::Any,
-    cell::RefCell,
-    collections::{HashMap, HashSet},
-    rc::Rc,
-};
-use tokio::sync::watch::Sender;
-use tracing::{error, trace, warn};
+use std::collections::{HashMap, HashSet};
+use tracing::error;
 
 impl Controller {
     pub fn convert(desc: ControllerDesc) -> Self {

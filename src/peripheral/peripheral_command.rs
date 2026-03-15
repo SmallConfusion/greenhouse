@@ -1,4 +1,4 @@
-use std::{any::Any, fmt::Debug};
+use std::fmt::Debug;
 use tokio::{sync::watch::Receiver, task::JoinHandle};
 
 pub trait PeripheralCommand: Debug + Clone + Send + 'static {}

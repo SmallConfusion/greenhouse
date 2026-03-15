@@ -1,13 +1,10 @@
 use crate::{
     controller::stage::GenericCommand,
-    peripheral::{
-        peripheral_command::{Peripheral, PeripheralCommand},
-        running_peripheral::RunningPeripheral,
-    },
+    peripheral::peripheral_command::PeripheralCommand,
 };
 use derive_more::Constructor;
 use std::{any::Any, fmt::Debug};
-use tokio::sync::watch::{Receiver, Sender};
+use tokio::sync::watch::Sender;
 use tracing::error;
 
 #[derive(Debug, Constructor)]
