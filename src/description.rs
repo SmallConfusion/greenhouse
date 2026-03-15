@@ -1,8 +1,19 @@
 use schemars::JsonSchema;
 use serde::Deserialize;
-use std::{collections::HashMap, ops::Range};
+use std::{any::Any, collections::HashMap, ops::Range};
+use tokio::task::JoinHandle;
 
-use crate::peripherals::{pin::PinState, vent::VentState};
+use crate::{
+    peripheral::{
+        command_preset::GenericPeripheral,
+        peripheral_command::{Peripheral, PeripheralCommand},
+        running_peripheral::RunningPeripheral,
+    },
+    peripherals::{
+        pin::{Pin, PinState},
+        vent::{Vent, VentState},
+    },
+};
 
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct ControllerDesc {
@@ -45,4 +56,36 @@ pub enum SettingDesc {
 #[serde(untagged)]
 pub enum ConditionDesc {
     TempRange(Range<f32>),
+}
+
+impl PeripheralDesc {
+    pub fn to_generic_real(self) -> (Box<dyn GenericPeripheral>, JoinHandle<()>) {
+        match self {
+            PeripheralDesc::Pin(pin, pin_state) => {
+                Self::create_generic_peripheral(Pin::new(pin), pin_state)
+            }
+
+            PeripheralDesc::Vent(VentDesc { on, off }, vent_state) => {
+                Self::create_generic_peripheral(Vent::new(Pin::new(on), Pin::new(off)), vent_state)
+            }
+        }
+    }
+
+    fn create_generic_peripheral<T: Peripheral>(
+        peripheral: T,
+        default: T::Command,
+    ) -> (Box<dyn GenericPeripheral>, JoinHandle<()>) {
+        let (running, join) = RunningPeripheral::create_from_peripheral(peripheral, default);
+        let generic = Box::new(running);
+        (generic, join)
+    }
+}
+
+impl SettingDesc {
+    pub fn into_any(self) -> Box<dyn Any> {
+        match self {
+            SettingDesc::Pin(v) => Box::new(v),
+            SettingDesc::Vent(v) => Box::new(v),
+        }
+    }
 }

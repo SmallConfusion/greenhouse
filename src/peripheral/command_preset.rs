@@ -1,17 +1,14 @@
-use std::fmt::Debug;
-
-use crate::peripheral::peripheral_command::PeripheralCommand;
-use derive_more::Constructor;
-use tokio::{
-    sync::watch::{Receiver, Sender},
-    task::JoinHandle,
+use crate::{
+    controller::stage::GenericCommand,
+    peripheral::{
+        peripheral_command::{Peripheral, PeripheralCommand},
+        running_peripheral::RunningPeripheral,
+    },
 };
+use derive_more::Constructor;
+use std::{any::Any, fmt::Debug};
+use tokio::sync::watch::{Receiver, Sender};
 use tracing::error;
-
-pub trait Peripheral: Debug {
-    type Command: PeripheralCommand;
-    fn run_loop(self, receiver: Receiver<Self::Command>) -> JoinHandle<()>;
-}
 
 #[derive(Debug, Constructor)]
 pub struct CommandPreset<T: PeripheralCommand> {
@@ -25,4 +22,8 @@ impl<T: PeripheralCommand> CommandPreset<T> {
             error!("Cannot send value {:?}: {err}", self.value);
         }
     }
+}
+
+pub trait GenericPeripheral {
+    fn create_command(&self, command: Option<Box<dyn Any>>) -> Box<dyn GenericCommand>;
 }

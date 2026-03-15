@@ -1,16 +1,12 @@
-use std::time::Duration;
-
+use crate::{
+    peripheral::peripheral_command::Peripheral, peripheral::peripheral_command::PeripheralCommand,
+    peripherals::pin::Pin,
+};
 use derive_more::{Constructor, Deref, From};
 use schemars::JsonSchema;
 use serde::Deserialize;
+use std::time::Duration;
 use tracing::error;
-
-use crate::{
-    peripheral::{
-        command_preset::Peripheral, peripheral_command::PeripheralCommand,
-    },
-    peripherals::pin::Pin,
-};
 
 #[derive(Debug, Constructor)]
 pub struct Vent {
@@ -18,7 +14,7 @@ pub struct Vent {
     off: Pin,
 }
 
-#[derive(Debug, Deserialize, JsonSchema, From, Deref, Clone)]
+#[derive(Debug, Deserialize, JsonSchema, From, Deref, Clone, Copy)]
 pub struct VentState(pub f32);
 
 impl PeripheralCommand for VentState {}
@@ -28,12 +24,20 @@ impl Peripheral for Vent {
 
     fn run_loop(
         self,
-        _receiver: tokio::sync::watch::Receiver<Self::Command>,
+        mut receiver: tokio::sync::watch::Receiver<Self::Command>,
     ) -> tokio::task::JoinHandle<()> {
         tokio::spawn(async move {
             loop {
-                error!("Not implemented");
-                tokio::time::sleep(Duration::from_hours(1)).await;
+                if let Err(err) = receiver.changed().await {
+                    error!(
+                        "Vent {:?} {:?}'s async loop receiver returned an error: {err}", // TODO: Improve error message
+                        self.on, self.off,
+                    );
+                    return;
+                }
+
+                let new_state = *receiver.borrow();
+                error!("Vent stuff not implemented but {new_state:?} was received");
             }
         })
     }
