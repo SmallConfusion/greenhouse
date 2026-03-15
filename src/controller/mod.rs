@@ -1,9 +1,10 @@
-use std::time::Duration;
+pub mod stage;
 
 use crate::controller::stage::Stage;
 use derive_more::Constructor;
+use std::time::Duration;
+use tokio::task::JoinHandle;
 use tracing::trace;
-pub mod stage;
 
 pub trait Condition {
     // TODO: Move to module
@@ -13,6 +14,7 @@ pub trait Condition {
 #[derive(Debug, Constructor)]
 pub struct Controller {
     stage_sets: Vec<StageSet>,
+    join_handles: Vec<JoinHandle<()>>,
 }
 
 impl Controller {
