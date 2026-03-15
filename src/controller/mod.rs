@@ -17,8 +17,8 @@ pub struct Controller {
 
 impl Controller {
     pub async fn run(mut self) {
-        for stage_set in self.stage_sets.iter_mut() {
-            for stage in stage_set.set.iter_mut() {
+        for stage_set in &mut self.stage_sets {
+            for stage in &mut stage_set.set {
                 // TODO: Replace with an actual run
                 stage.enter();
             }

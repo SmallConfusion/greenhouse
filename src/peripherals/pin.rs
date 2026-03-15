@@ -1,4 +1,3 @@
-use std::time::Duration;
 
 use crate::peripheral::{command_preset::Peripheral, peripheral_command::PeripheralCommand};
 use derive_more::Display;
@@ -73,7 +72,7 @@ impl Peripheral for Pin {
 
                 let new = receiver.borrow();
                 trace!("Pin {} recieved command {:?}", self.index, *new);
-                self.set(&*new);
+                self.set(&new);
             }
         })
     }

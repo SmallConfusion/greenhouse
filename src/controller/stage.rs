@@ -33,7 +33,7 @@ impl Stage {
     }
 
     pub fn enter(&mut self) {
-        for command in self.entry.iter_mut() {
+        for command in &mut self.entry {
             command.send();
         }
     }
