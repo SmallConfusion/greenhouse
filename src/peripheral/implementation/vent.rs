@@ -9,7 +9,7 @@ use derive_more::{Deref, Display, From};
 use schemars::JsonSchema;
 use serde::Deserialize;
 use tokio::{select, time::Instant};
-use tracing::{error, trace};
+use tracing::{debug, error};
 
 #[derive(Debug)]
 pub struct Vent {
@@ -39,7 +39,7 @@ impl Peripheral for Vent {
                 }
 
                 let new_state = *receiver.borrow();
-                trace!("Vent {self} received command {new_state}");
+                debug!("Vent {self} received command {new_state}");
 
                 let diff = *new_state - *self.current_state;
                 let dist = diff.abs();

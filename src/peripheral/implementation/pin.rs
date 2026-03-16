@@ -48,10 +48,10 @@ impl Pin {
                 PinState::On => pin.set_low(),
             }
         } else {
-            info!("{self} is not initialized");
+            error!("{self} is not initialized");
         }
 
-        trace!("{self} set {state}");
+        debug!("{self} set {state}");
     }
 }
 
@@ -70,7 +70,7 @@ impl Peripheral for Pin {
                 }
 
                 let new = receiver.borrow();
-                trace!("{self} recieved command {}", *new);
+                debug!("{self} recieved command {}", *new);
                 self.set(&new);
             }
         })

@@ -10,9 +10,15 @@ use crate::{
 };
 use color_eyre::eyre::Result;
 use schemars::schema_for;
-use std::{fs::File, io::Write};
-use tracing::{info, trace};
-use tracing_subscriber::EnvFilter;
+use std::{
+    fs::File,
+    io::Write,
+    time::{SystemTime, UNIX_EPOCH},
+};
+use tracing::{info, level_filters::LevelFilter, trace};
+use tracing_subscriber::{
+    EnvFilter, Layer, Registry, fmt::layer, layer::SubscriberExt, util::SubscriberInitExt,
+};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -25,16 +31,18 @@ async fn main() -> Result<()> {
         info!("Writing schema file to config.schema.json");
         let schema = serde_json::to_string(&schema_for!(Config))?;
         write!(File::create("config.schema.json")?, "{schema}")?;
+        println!("Wrote schema file to config.schema.json");
     }
 
     if args.template {
         info!("Writing template config file to config.yaml");
         let content = include_str!("config/config.yaml");
         write!(File::create_new("config.yaml")?, "{content}")?;
+        println!("Wrote template config file to config.yaml");
     }
 
     if args.schema || args.template {
-        info!("Did config stuff, not running. Run without -s or -t to run controller");
+        println!("Did config stuff, not running. Run without -s or -t to run controller");
         return Ok(());
     }
 
@@ -52,11 +60,29 @@ async fn main() -> Result<()> {
 }
 
 fn init_logging() {
-    tracing_subscriber::fmt()
-        .with_env_filter(EnvFilter::from_default_env())
+    let file_number = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+
+    let log_file = File::create(format!("log{file_number}.txt")).unwrap();
+
+    let stdout_layer = tracing_subscriber::fmt::layer()
         .with_line_number(true)
         .with_file(true)
-        .init();
+        .pretty()
+        .with_filter(EnvFilter::from_default_env());
+
+    let file_layer = layer()
+        .with_writer(log_file)
+        .with_ansi(false)
+        .with_filter(LevelFilter::INFO);
+
+    Registry::default()
+        .with(stdout_layer)
+        .with(file_layer)
+        .try_init()
+        .unwrap();
 
     trace!("Initialized logging");
 }

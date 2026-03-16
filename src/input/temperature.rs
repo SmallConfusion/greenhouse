@@ -3,7 +3,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use tracing::{error, info, warn};
+use tracing::{debug, error, warn};
 
 static TEMPERATURE: OnceLock<Mutex<Temperature>> = OnceLock::new();
 
@@ -67,7 +67,7 @@ impl Temperature {
                 time: Instant::now(),
             });
 
-            info!("Read temperature {temp_str}/1000 \u{00B0}C, {fahrenheight}, \u{00B0}F");
+            debug!("Read temperature {temp_str}/1000 \u{00B0}C, {fahrenheight}, \u{00B0}F");
 
             return fahrenheight;
         }

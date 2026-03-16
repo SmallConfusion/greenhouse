@@ -1,3 +1,4 @@
 /target
 /config.schema.json
 /config.yaml
+/log*.txt
