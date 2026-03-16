@@ -4,7 +4,7 @@ use rppal::gpio::{Gpio, OutputPin};
 use schemars::JsonSchema;
 use serde::Deserialize;
 use tokio::{sync::watch::Receiver, task::JoinHandle};
-use tracing::{debug, error, info, trace};
+use tracing::{debug, error, info};
 
 #[derive(Debug, Deserialize, JsonSchema, Clone, Copy, Display, PartialEq, Eq)]
 pub enum PinState {
