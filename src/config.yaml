@@ -13,6 +13,16 @@ stage_sets:
           start: 30
           end: 40
         settings:
+          pin1: On
+
+      - condition:
+          start: 20
+          end: 30
+        settings:
+          pin0: On
+
+  - stages:
+      - condition:
           start: 40
           end: 50
         settings:

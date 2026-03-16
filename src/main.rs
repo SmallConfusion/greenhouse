@@ -4,26 +4,57 @@ pub mod convert;
 pub mod description;
 pub mod peripheral;
 
+use std::{
+    fs::{self, File},
+    io::Write,
+};
+
 use crate::{convert::convert_controller, description::ControllerDesc};
+use clap::Parser;
 use color_eyre::eyre::Result;
-use std::{io::Read, time::Duration};
+use schemars::schema_for;
 use tracing::{error, info, level_filters::LevelFilter, trace};
 use tracing_subscriber::FmtSubscriber;
+
+#[derive(Debug, Parser)]
+struct Args {
+    #[arg(short, long)]
+    schema: bool,
+
+    #[arg(short, long)]
+    template: bool,
+
+    #[arg(short, long, default_value_t = String::from("config.yaml"))]
+    config: String,
+}
 
 #[tokio::main]
 async fn main() -> Result<()> {
     color_eyre::install()?;
     init_logging();
 
-    let config = std::fs::read_to_string("config.yaml").unwrap();
-    let desc: ControllerDesc = serde_yaml::from_str(&config).unwrap();
+    let args = Args::parse();
 
-    dbg!(&desc);
+    if args.schema {
+        info!("Writing schema file to config.schema.json");
+        let schema = serde_json::to_string(&schema_for!(ControllerDesc))?;
+        write!(File::create("config.schema.json")?, "{schema}")?;
+    }
 
-    // println!(
-    //     "{}",
-    //     serde_json::to_string(&schema_for!(ControllerDesc)).unwrap()
-    // );
+    if args.template {
+        info!("Writing template config file to config.yaml");
+        let content = include_str!("config.yaml");
+        write!(File::create_new("config.yaml")?, "{content}")?;
+    }
+
+    if args.schema || args.template {
+        info!("Did config stuff, not running. Run without -s or -t to run controller");
+        return Ok(());
+    }
+
+    info!("Loading config from {}", args.config);
+    let config = std::fs::read_to_string(args.config)?;
+    let desc: ControllerDesc = serde_yaml::from_str(&config)?;
 
     let c = convert_controller(desc);
     c.run().await;
@@ -38,7 +69,7 @@ fn init_logging() {
 
     tracing::subscriber::set_global_default(subscriber).unwrap();
 
-    info!("Initialized logging");
+    trace!("Initialized logging");
 }
 
 pub fn get_temperature() -> f32 {
