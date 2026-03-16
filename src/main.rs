@@ -4,10 +4,7 @@ pub mod convert;
 pub mod description;
 pub mod peripheral;
 
-use std::{
-    fs::{self, File},
-    io::Write,
-};
+use std::{fs::File, io::Write};
 
 use crate::{convert::convert_controller, description::ControllerDesc};
 use clap::Parser;
@@ -73,6 +70,8 @@ fn init_logging() {
 }
 
 pub fn get_temperature() -> f32 {
+    todo!();
+
     loop {
         let temp_str = std::fs::read_to_string("temp.txt").unwrap();
         let Ok(r) = temp_str.trim().parse() else {

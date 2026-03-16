@@ -1,11 +1,11 @@
-use std::{error::Error, time::Duration};
+use std::time::Duration;
 
 use crate::peripheral::{
     Peripheral,
     implementation::pin::{Pin, PinState},
     peripheral_command::PeripheralCommand,
 };
-use derive_more::{Constructor, Deref, From};
+use derive_more::{Deref, From};
 use schemars::JsonSchema;
 use serde::Deserialize;
 use tokio::{select, time::Instant};
