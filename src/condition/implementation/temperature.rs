@@ -1,4 +1,4 @@
-use crate::{condition::Condition, get_temperature};
+use crate::{condition::Condition, input::temperature::get_temperature};
 use derive_more::Constructor;
 use std::ops::Range;
 

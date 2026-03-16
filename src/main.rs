@@ -1,46 +1,35 @@
 pub mod condition;
+pub mod config;
 pub mod controller;
-pub mod convert;
-pub mod description;
+pub mod input;
 pub mod peripheral;
 
-use std::{fs::File, io::Write};
-
-use crate::{convert::convert_controller, description::ControllerDesc};
-use clap::Parser;
+use crate::{
+    config::{Config, args::parse_args},
+    input::temperature::init_temperature,
+};
 use color_eyre::eyre::Result;
 use schemars::schema_for;
-use tracing::{error, info, level_filters::LevelFilter, trace};
-use tracing_subscriber::FmtSubscriber;
-
-#[derive(Debug, Parser)]
-struct Args {
-    #[arg(short, long)]
-    schema: bool,
-
-    #[arg(short, long)]
-    template: bool,
-
-    #[arg(short, long, default_value_t = String::from("config.yaml"))]
-    config: String,
-}
+use std::{fs::File, io::Write};
+use tracing::{info, trace};
+use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     color_eyre::install()?;
     init_logging();
 
-    let args = Args::parse();
+    let args = parse_args();
 
-    if args.schema {
+    if args.schema | args.template {
         info!("Writing schema file to config.schema.json");
-        let schema = serde_json::to_string(&schema_for!(ControllerDesc))?;
+        let schema = serde_json::to_string(&schema_for!(Config))?;
         write!(File::create("config.schema.json")?, "{schema}")?;
     }
 
     if args.template {
         info!("Writing template config file to config.yaml");
-        let content = include_str!("config.yaml");
+        let content = include_str!("config/config.yaml");
         write!(File::create_new("config.yaml")?, "{content}")?;
     }
 
@@ -49,38 +38,25 @@ async fn main() -> Result<()> {
         return Ok(());
     }
 
-    info!("Loading config from {}", args.config);
-    let config = std::fs::read_to_string(args.config)?;
-    let desc: ControllerDesc = serde_yaml::from_str(&config)?;
+    let Config {
+        controller_desc,
+        temperature_path,
+    } = Config::load(&args.config);
 
-    let c = convert_controller(desc);
-    c.run().await;
+    init_temperature(temperature_path);
+
+    let controller = controller_desc.initialize();
+    controller.run().await;
 
     Ok(())
 }
 
 fn init_logging() {
-    let subscriber = FmtSubscriber::builder()
-        .with_max_level(LevelFilter::TRACE)
-        .finish();
-
-    tracing::subscriber::set_global_default(subscriber).unwrap();
+    tracing_subscriber::fmt()
+        .with_env_filter(EnvFilter::from_default_env())
+        .with_line_number(true)
+        .with_file(true)
+        .init();
 
     trace!("Initialized logging");
-}
-
-pub fn get_temperature() -> f32 {
-    todo!();
-
-    loop {
-        let temp_str = std::fs::read_to_string("temp.txt").unwrap();
-        let Ok(r) = temp_str.trim().parse() else {
-            error!("Incorrect temperature {temp_str}");
-            continue;
-        };
-
-        trace!("Got temperature {r}");
-
-        return r;
-    }
 }

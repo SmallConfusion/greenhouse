@@ -21,6 +21,8 @@ pub struct Stage {
 
     /// If this condition is met, the stage will not exit.
     stay_condition: Option<Box<dyn Condition>>,
+
+    name: Option<String>,
 }
 
 impl Condition for Option<Box<dyn Condition>> {
@@ -31,7 +33,11 @@ impl Condition for Option<Box<dyn Condition>> {
 
 impl Stage {
     pub fn enter(&mut self) {
-        info!("Entering stage {self:?}");
+        if let Some(name) = &self.name {
+            info!("Entering stage {name}");
+        } else {
+            info!("Entering unnamed stage");
+        }
 
         for command in &mut self.entry {
             command.send();

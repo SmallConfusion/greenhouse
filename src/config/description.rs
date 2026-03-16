@@ -42,6 +42,8 @@ pub struct StageSetDesc {
 pub struct StageDesc {
     pub settings: HashMap<String, SettingDesc>,
     pub condition: ConditionDesc,
+    pub exit_condition: Option<ConditionDesc>,
+    pub name: Option<String>,
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]

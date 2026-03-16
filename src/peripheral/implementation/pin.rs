@@ -4,7 +4,7 @@ use rppal::gpio::{Gpio, OutputPin};
 use schemars::JsonSchema;
 use serde::Deserialize;
 use tokio::{sync::watch::Receiver, task::JoinHandle};
-use tracing::{debug, error, trace};
+use tracing::{debug, error, info, trace};
 
 #[derive(Debug, Deserialize, JsonSchema, Clone, Copy, Display, PartialEq, Eq)]
 pub enum PinState {
@@ -33,9 +33,9 @@ impl Pin {
         })();
 
         if pin.is_some() {
-            debug!("Pin {index} initialized successfully");
+            info!("Pin {index} initialized successfully");
         } else {
-            debug!("Pin {index} failed initialization");
+            error!("Pin {index} failed initialization");
         }
 
         Self { pin, index }
@@ -48,10 +48,10 @@ impl Pin {
                 PinState::On => pin.set_low(),
             }
         } else {
-            error!("Pin {} is not initialized", self.index);
+            info!("{self} is not initialized");
         }
 
-        trace!("Pin {} set {}", self.index, state);
+        trace!("{self} set {state}");
     }
 }
 
@@ -70,9 +70,15 @@ impl Peripheral for Pin {
                 }
 
                 let new = receiver.borrow();
-                trace!("Pin {} recieved command {:?}", self.index, *new);
+                trace!("{self} recieved command {}", *new);
                 self.set(&new);
             }
         })
+    }
+}
+
+impl std::fmt::Display for Pin {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Pin({})", self.index)
     }
 }

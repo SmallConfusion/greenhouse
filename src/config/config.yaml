@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=config.schema.json
+
+temperature_path: "temp.txt"
+
+controller_desc:
+  peripherals:
+    pin0: [0, Off]
+    pin1: [1, Off]
+    vent0:
+      - off: 3
+        on: 4
+      - 10
+
+  stage_sets:
+    - stages:
+        - name: "Stage A"
+          condition:
+            start: 20
+            end: 30
+          settings:
+            pin1: On
+
+        - name: "Stage B"
+          condition:
+            start: 30
+            end: 40
+          exit_condition:
+            start: 30
+            end: 42
+          settings:
+            pin0: On
+
+    - stages:
+        - name: "Stage C"
+          condition:
+            start: 30
+            end: 50
+          settings:
+            vent0: 20.0
+            pin1: On

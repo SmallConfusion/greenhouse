@@ -5,7 +5,7 @@ use crate::peripheral::{
     implementation::pin::{Pin, PinState},
     peripheral_command::PeripheralCommand,
 };
-use derive_more::{Deref, From};
+use derive_more::{Deref, Display, From};
 use schemars::JsonSchema;
 use serde::Deserialize;
 use tokio::{select, time::Instant};
@@ -19,7 +19,7 @@ pub struct Vent {
     current_state: VentState,
 }
 
-#[derive(Debug, Deserialize, JsonSchema, From, Deref, Clone, Copy)]
+#[derive(Debug, Deserialize, JsonSchema, From, Deref, Clone, Copy, Display)]
 pub struct VentState(pub f32);
 
 impl PeripheralCommand for VentState {}
@@ -34,15 +34,12 @@ impl Peripheral for Vent {
         tokio::spawn(async move {
             loop {
                 if let Err(err) = receiver.changed().await {
-                    error!(
-                        "Vent {:?} {:?}'s async loop receiver returned an error: {err}", // TODO: Improve error message
-                        self.on, self.off,
-                    );
+                    error!("{self}'s async loop receiver returned an error: {err}");
                     return;
                 }
 
                 let new_state = *receiver.borrow();
-                trace!("Vent {self:?} received {new_state:?}");
+                trace!("Vent {self} received command {new_state}");
 
                 let diff = *new_state - *self.current_state;
                 let dist = diff.abs();
@@ -78,5 +75,11 @@ impl Vent {
             off,
             current_state: 0.0.into(),
         }
+    }
+}
+
+impl std::fmt::Display for Vent {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Vent({}, {})", self.on, self.off)
     }
 }
