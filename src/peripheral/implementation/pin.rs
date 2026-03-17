@@ -24,10 +24,10 @@ impl Pin {
     pub fn new(index: u8) -> Self {
         let pin = (|| {
             Gpio::new()
-                .inspect_err(|e| error!("Cannot get gpio: {e}"))
+                .inspect_err(|err| error!("Cannot get gpio: {err}"))
                 .ok()?
                 .get(index)
-                .inspect_err(|e| error!("Cannot get pin {index}: {e}"))
+                .inspect_err(|err| error!("Cannot get pin {index}: {err}"))
                 .ok()
                 .map(rppal::gpio::Pin::into_output)
         })();
@@ -69,8 +69,8 @@ impl Peripheral for Pin {
                     return;
                 }
 
-                let new = receiver.borrow();
-                debug!("{self} recieved command {}", *new);
+                let new = *receiver.borrow();
+                debug!("{self} received command {}", new);
                 self.set(&new);
             }
         })

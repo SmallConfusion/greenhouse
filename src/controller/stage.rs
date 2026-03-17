@@ -27,7 +27,10 @@ pub struct Stage {
 
 impl Condition for Option<Box<dyn Condition>> {
     fn is_met(&self) -> bool {
-        self.iter().map(|c| c.is_met()).next().unwrap_or(true)
+        self.iter()
+            .map(|condition| condition.is_met())
+            .next()
+            .unwrap_or(true)
     }
 }
 
@@ -40,7 +43,7 @@ impl Stage {
         }
 
         for command in &mut self.entry {
-            command.send();
+            command.send_generic();
         }
     }
 
@@ -49,9 +52,9 @@ impl Stage {
     }
 
     pub fn should_exit(&self) -> bool {
-        match &self.stay_condition {
-            Some(c) => !c.is_met(),
-            None => !self.condition.is_met(),
-        }
+        !self.stay_condition.as_ref().map_or_else(
+            || self.condition.is_met(),
+            |stay_condition| stay_condition.is_met(),
+        )
     }
 }

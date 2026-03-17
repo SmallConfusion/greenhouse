@@ -20,7 +20,7 @@ struct LastValue {
 }
 
 impl Temperature {
-    fn new(path: String) -> Self {
+    const fn new(path: String) -> Self {
         Self {
             path,
             last_value: None,
@@ -36,7 +36,7 @@ impl Temperature {
 
         loop {
             let temp_str = match std::fs::read_to_string(&self.path) {
-                Ok(v) => v,
+                Ok(str) => str,
                 Err(err) => {
                     error!(
                         "Read error for temperature file at {}: {err}; retrying in 10 seconds",
@@ -48,7 +48,7 @@ impl Temperature {
             };
 
             let temp_val: i32 = match temp_str.parse() {
-                Ok(v) => v,
+                Ok(val) => val,
                 Err(err) => {
                     warn!(
                         "Cannot parse i32 from {temp_str}, read from {}: {err}; retrying in one second",
@@ -59,24 +59,27 @@ impl Temperature {
                 }
             };
 
-            #[allow(clippy::cast_precision_loss)]
-            let fahrenheight = (temp_val as f32 * 0.001) * 1.8 + 32.0;
+            #[allow(
+                clippy::cast_precision_loss,
+                reason = "Value will be small, and precision is not necessary"
+            )]
+            let fahrenheit = (temp_val as f32 * 0.001).mul_add(1.8, 32.0);
 
             self.last_value = Some(LastValue {
-                value: fahrenheight,
+                value: fahrenheit,
                 time: Instant::now(),
             });
 
-            debug!("Read temperature {temp_str}/1000 \u{00B0}C, {fahrenheight}, \u{00B0}F");
+            debug!("Read temperature {temp_str}/1000 \u{00B0}C, {fahrenheit}, \u{00B0}F");
 
-            return fahrenheight;
+            return fahrenheit;
         }
     }
 }
 
 /// # Panics
 ///
-/// Will panic if already set
+/// Will panic if already set.
 pub fn init_temperature(path: String) {
     TEMPERATURE
         .set(Mutex::new(Temperature::new(path)))
@@ -85,7 +88,7 @@ pub fn init_temperature(path: String) {
 
 /// # Panics
 ///
-/// Will panic if not initialized
+/// Will panic if not initialized.
 pub fn get_temperature() -> f32 {
     let mutex = TEMPERATURE.get().expect("Temperature not initialized.");
     let mut guard = mutex.lock().expect("Temperature mutex failed");

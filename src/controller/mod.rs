@@ -3,7 +3,7 @@ pub mod stage_set;
 
 use crate::controller::stage_set::StageSet;
 use derive_more::Constructor;
-use futures::{StreamExt, stream::FuturesUnordered};
+use futures::{StreamExt as _, stream::FuturesUnordered};
 use tokio::task::JoinHandle;
 use tracing::error;
 
@@ -21,8 +21,8 @@ impl Controller {
 
         let mut futures = FuturesUnordered::new();
 
-        for h in self.join_handles {
-            futures.push(h);
+        for handle in self.join_handles {
+            futures.push(handle);
         }
 
         futures.next().await;

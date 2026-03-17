@@ -58,10 +58,10 @@ impl Peripheral for Vent {
                     _ = receiver.changed() => receiver.mark_changed(),
                 };
 
-                let end_time = Instant::now();
+                let moved_time = start_time.elapsed();
+
                 pin.set(&PinState::Off);
 
-                let moved_time = end_time - start_time;
                 self.current_state.0 += moved_time.as_secs_f32();
             }
         })

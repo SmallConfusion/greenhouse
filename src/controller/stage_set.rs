@@ -5,15 +5,15 @@ use tokio::task::JoinHandle;
 
 #[derive(Debug)]
 pub struct StageSet {
-    set: Vec<Stage>,
+    stage: Vec<Stage>,
     default: Stage,
     is_in_default: bool,
 }
 
 impl StageSet {
-    pub fn new(set: Vec<Stage>, default: Stage) -> Self {
+    pub const fn new(stage: Vec<Stage>, default: Stage) -> Self {
         Self {
-            set,
+            stage,
             default,
             is_in_default: true,
         }
@@ -22,9 +22,9 @@ impl StageSet {
     pub fn run(mut self) -> JoinHandle<()> {
         tokio::spawn(async move {
             loop {
-                let entry_stage = self.set.iter_mut().find(|s| s.can_enter());
+                let entry_stage_opt = self.stage.iter_mut().find(|stage| stage.can_enter());
 
-                if let Some(entry_stage) = entry_stage {
+                if let Some(entry_stage) = entry_stage_opt {
                     self.is_in_default = false;
 
                     entry_stage.enter();

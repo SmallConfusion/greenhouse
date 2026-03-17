@@ -62,11 +62,9 @@ pub enum ConditionDesc {
 impl PeripheralDesc {
     pub fn to_generic_real(self) -> (Box<dyn GenericPeripheral>, JoinHandle<()>) {
         match self {
-            PeripheralDesc::Pin(pin, pin_state) => {
-                Self::create_generic_peripheral(Pin::new(pin), pin_state)
-            }
+            Self::Pin(pin, pin_state) => Self::create_generic_peripheral(Pin::new(pin), pin_state),
 
-            PeripheralDesc::Vent(VentDesc { on, off }, vent_state) => {
+            Self::Vent(VentDesc { on, off }, vent_state) => {
                 Self::create_generic_peripheral(Vent::new(Pin::new(on), Pin::new(off)), vent_state)
             }
         }
@@ -85,8 +83,8 @@ impl PeripheralDesc {
 impl SettingDesc {
     pub fn into_any(self) -> Box<dyn Any> {
         match self {
-            SettingDesc::Pin(v) => Box::new(v),
-            SettingDesc::Vent(v) => Box::new(v),
+            Self::Pin(inner) => Box::new(inner),
+            Self::Vent(inner) => Box::new(inner),
         }
     }
 }
@@ -94,7 +92,7 @@ impl SettingDesc {
 impl ConditionDesc {
     pub fn into_generic(self) -> Box<dyn Condition> {
         match self {
-            ConditionDesc::TempRange(range) => Box::new(TemperatureRange::new(range)),
+            Self::TempRange(range) => Box::new(TemperatureRange::new(range)),
         }
     }
 }

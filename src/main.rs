@@ -12,12 +12,13 @@ use color_eyre::eyre::Result;
 use schemars::schema_for;
 use std::{
     fs::File,
-    io::Write,
+    io::Write as _,
     time::{SystemTime, UNIX_EPOCH},
 };
 use tracing::{info, level_filters::LevelFilter, trace};
 use tracing_subscriber::{
-    EnvFilter, Layer, Registry, fmt::layer, layer::SubscriberExt, util::SubscriberInitExt,
+    EnvFilter, Layer as _, Registry, fmt::layer, layer::SubscriberExt as _,
+    util::SubscriberInitExt as _,
 };
 
 #[tokio::main]

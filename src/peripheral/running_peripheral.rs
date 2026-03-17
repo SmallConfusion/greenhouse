@@ -25,19 +25,20 @@ impl<T: Peripheral> RunningPeripheral<T> {
 }
 
 pub trait GenericPeripheral {
-    fn create_command(&self, command: Option<Box<dyn Any>>) -> Box<dyn GenericCommand>;
+    fn create_command(&self, command_opt: Option<Box<dyn Any>>) -> Box<dyn GenericCommand>;
 }
 
 impl<T: Peripheral> GenericPeripheral for RunningPeripheral<T> {
-    fn create_command(&self, command: Option<Box<dyn Any>>) -> Box<dyn GenericCommand> {
-        let new_value = command
-            .and_then(|c| {
-                c.downcast::<T::Command>()
-                    .inspect_err(|_e| error!("Mismatched types"))
-                    .map(|c| *c)
+    fn create_command(&self, command_opt: Option<Box<dyn Any>>) -> Box<dyn GenericCommand> {
+        let new_value = command_opt
+            .and_then(|command_dyn| {
+                command_dyn
+                    .downcast::<T::Command>()
+                    .inspect_err(|_| error!("Mismatched types"))
+                    .map(|command| *command)
                     .ok()
             })
-            .unwrap_or(self.default.clone());
+            .unwrap_or_else(|| self.default.clone());
 
         let preset = CommandPreset::new(self.sender.clone(), new_value);
         Box::new(preset)

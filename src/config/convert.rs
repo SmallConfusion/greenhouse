@@ -21,7 +21,7 @@ impl ControllerDesc {
             let used_names = stage_set
                 .stages
                 .iter()
-                .flat_map(|s| s.settings.keys().cloned())
+                .flat_map(|stage| stage.settings.keys().cloned())
                 .collect::<HashSet<_>>();
 
             let mut stages = Vec::new();
