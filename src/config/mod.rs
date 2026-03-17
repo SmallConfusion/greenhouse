@@ -17,7 +17,7 @@ pub struct Config {
 impl Config {
     /// # Panics
     ///
-    /// Will panic if file donsn't exist or if config file is invalid.
+    /// Will panic if file doesn't exist or if config file is invalid.
     pub fn load(path: &str) -> Self {
         let file = File::open(path).expect("Can't open config file");
         let reader = BufReader::new(file);

@@ -1,9 +1,9 @@
 use std::time::Duration;
 
 use crate::peripheral::{
-    Peripheral,
     implementation::pin::{Pin, PinState},
     peripheral_command::PeripheralCommand,
+    Peripheral,
 };
 use derive_more::{Deref, Display, From};
 use schemars::JsonSchema;
@@ -56,7 +56,7 @@ impl Peripheral for Vent {
                 select! {
                     () = tokio::time::sleep(Duration::from_secs_f32(dist)) => (),
                     _ = receiver.changed() => receiver.mark_changed(),
-                };
+                }
 
                 let moved_time = start_time.elapsed();
 

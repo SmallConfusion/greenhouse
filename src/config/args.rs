@@ -3,7 +3,7 @@ use clap::Parser;
 #[derive(Debug, Parser)]
 #[command(version, about)]
 pub struct Args {
-    /// Outputs the json schema file.
+    /// Outputs the JSON schema file.
     #[arg(short, long)]
     pub schema: bool,
 
