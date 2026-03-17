@@ -13,7 +13,7 @@ pub struct CommandPreset<T: PeripheralCommand> {
 impl<T: PeripheralCommand> CommandPreset<T> {
     pub fn send(&mut self) {
         if let Err(err) = self.sender.send(self.value.clone()) {
-            error!("Cannot send value {:?}: {err}", self.value);
+            error!("Cannot send value {}: {err}", self.value);
         }
     }
 }

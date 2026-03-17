@@ -1,3 +1,3 @@
-use std::fmt::Debug;
+use std::fmt::{Debug, Display};
 
-pub trait PeripheralCommand: Debug + Clone + Send + Sync + 'static {}
+pub trait PeripheralCommand: Debug + Display + Clone + Send + Sync + 'static {}
