@@ -8,6 +8,7 @@ use tokio::task::JoinHandle;
 use tracing::error;
 
 use crate::controller::stage_set::StageSet;
+use crate::web_server::data::InfoChannel;
 
 #[derive(Debug, Constructor)]
 pub struct Controller {
@@ -16,9 +17,9 @@ pub struct Controller {
 }
 
 impl Controller {
-    pub async fn run(mut self) {
+    pub async fn run(mut self, info_channel: InfoChannel) {
         for set in self.stage_sets {
-            self.join_handles.push(set.run());
+            self.join_handles.push(set.run(info_channel.clone()));
         }
 
         let mut futures = FuturesUnordered::new();

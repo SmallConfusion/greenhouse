@@ -9,8 +9,11 @@ use std::fs::File;
 use std::io::Write as _;
 use std::time::{SystemTime, UNIX_EPOCH};
 
+use axum::Router;
+use axum::serve::Serve;
 use color_eyre::eyre::Result;
 use schemars::schema_for;
+use tokio::net::TcpListener;
 use tokio::select;
 use tracing::level_filters::LevelFilter;
 use tracing::{info, trace};
@@ -18,6 +21,7 @@ use tracing_subscriber::fmt::layer;
 use tracing_subscriber::layer::SubscriberExt as _;
 use tracing_subscriber::util::SubscriberInitExt as _;
 use tracing_subscriber::{EnvFilter, Layer as _, Registry};
+use web_server::data::InfoChannel;
 
 use crate::config::Config;
 use crate::config::args::parse_args;
@@ -59,12 +63,12 @@ async fn main() -> Result<()> {
 
     let controller = controller_desc.initialize();
 
-    let server_join = start_server();
-    let controller_join = controller.run();
+    let (info_channel, server_join) = start_server().await;
+    let controller_join = controller.run(info_channel);
 
     select! {
         () = controller_join => (), // TODO: Add useful info logging here
-        () = server_join => (),
+        _ = server_join => (),
     }
 
     Ok(())
@@ -98,7 +102,7 @@ fn init_logging() {
     trace!("Initialized logging");
 }
 
-fn start_server() -> impl Future<Output = ()> {
-    let server = Server::new();
-    server.run()
+async fn start_server() -> (InfoChannel, Serve<TcpListener, Router, Router>) {
+    let server = Server::default();
+    server.run().await
 }

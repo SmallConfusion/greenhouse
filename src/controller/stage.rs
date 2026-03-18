@@ -1,4 +1,4 @@
-use std::fmt::Debug;
+use std::fmt::{Debug, Display, Formatter};
 
 use derive_more::Constructor;
 use never::Never;
@@ -24,6 +24,12 @@ pub struct Stage {
     stay_condition: Option<Box<dyn Condition>>,
 
     name: String,
+}
+
+impl Display for Stage {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Stage {}", self.name)
+    }
 }
 
 impl Condition for Option<Box<dyn Condition>> {

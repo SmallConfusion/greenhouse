@@ -1,29 +1,58 @@
 use std::collections::HashMap;
+use std::fmt::{Display, Formatter};
 use std::sync::Arc;
 
 use tokio::sync::RwLock;
-use tokio::sync::mpsc::{UnboundedSender, unbounded_channel};
+use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender, unbounded_channel};
 use tokio::task::JoinHandle;
-use tracing::error;
+use tracing::{error, trace};
 
+#[derive(Clone, Debug)]
 pub enum Info {
+    /// (Set name, Stage name).
     StateEnter(String, String),
-    TemperatureGot(f32),
+}
+
+impl Display for Info {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::StateEnter(set, stage) => {
+                write!(f, "Stage Entered {{ Set: \"{set}\" Stage: \"{stage}\" }}")
+            }
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct InfoChannel {
+    sender: UnboundedSender<Info>,
+}
+
+impl InfoChannel {
+    pub fn new() -> (Self, UnboundedReceiver<Info>) {
+        let (sender, receiver) = unbounded_channel();
+
+        (Self { sender }, receiver)
+    }
+
+    pub fn send_info(&mut self, info: Info) {
+        trace!("Sending info {info}");
+
+        match self.sender.send(info) {
+            Ok(()) => (),
+            Err(err) => error!("Error sending info: {err}"),
+        }
+    }
 }
 
 #[derive(Clone, Default)]
 pub(super) struct ServerData {
     pub set_states: Arc<RwLock<HashMap<String, String>>>,
-    pub last_temperature: Arc<RwLock<f32>>,
 }
 
 impl ServerData {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    pub fn run(&self) -> (UnboundedSender<Info>, JoinHandle<()>) {
-        let (sender, mut receiver) = unbounded_channel::<Info>();
+    pub fn run(&self) -> (InfoChannel, JoinHandle<()>) {
+        let (info_channel, mut receiver) = InfoChannel::new();
 
         let our_self = self.clone();
 
@@ -36,17 +65,16 @@ impl ServerData {
                     break;
                 };
 
+                trace!("Got info {info}");
+
                 match info {
                     Info::StateEnter(set, stage) => {
                         our_self.set_states.write().await.insert(set, stage);
-                    }
-                    Info::TemperatureGot(temperature) => {
-                        *our_self.last_temperature.write().await = temperature;
                     }
                 }
             }
         });
 
-        (sender, join)
+        (info_channel, join)
     }
 }

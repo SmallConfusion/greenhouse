@@ -3,6 +3,7 @@ use std::time::Duration;
 use tokio::task::JoinHandle;
 
 use crate::controller::stage::Stage;
+use crate::web_server::data::{Info, InfoChannel};
 
 #[derive(Debug)]
 pub struct StageSet {
@@ -22,8 +23,7 @@ impl StageSet {
         }
     }
 
-    pub fn run(mut self) -> JoinHandle<()> {
-        // TODO: Add server info sending here
+    pub fn run(mut self, mut info_handle: InfoChannel) -> JoinHandle<()> {
         tokio::spawn(async move {
             loop {
                 let entry_stage_opt = self.stage.iter_mut().find(|stage| stage.can_enter());
@@ -33,12 +33,21 @@ impl StageSet {
 
                     entry_stage.enter();
 
+                    info_handle
+                        .send_info(Info::StateEnter(self.name.clone(), entry_stage.to_string()));
+
                     while !entry_stage.should_exit() {
                         tokio::time::sleep(Duration::new(1, 0)).await;
                     }
                 } else {
                     if !self.is_in_default {
                         self.default.enter();
+
+                        info_handle.send_info(Info::StateEnter(
+                            self.name.clone(),
+                            self.default.to_string(),
+                        ));
+
                         self.is_in_default = true;
                     }
 
