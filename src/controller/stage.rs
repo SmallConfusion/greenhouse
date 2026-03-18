@@ -4,7 +4,8 @@ use derive_more::Constructor;
 use never::Never;
 use tracing::info;
 
-use crate::{condition::Condition, peripheral::command_preset::GenericCommand};
+use crate::condition::Condition;
+use crate::peripheral::command_preset::GenericCommand;
 
 impl Condition for Never {
     fn is_met(&self) -> bool {
@@ -22,7 +23,7 @@ pub struct Stage {
     /// If this condition is met, the stage will not exit.
     stay_condition: Option<Box<dyn Condition>>,
 
-    name: Option<String>,
+    name: String,
 }
 
 impl Condition for Option<Box<dyn Condition>> {
@@ -36,11 +37,7 @@ impl Condition for Option<Box<dyn Condition>> {
 
 impl Stage {
     pub fn enter(&mut self) {
-        if let Some(name) = &self.name {
-            info!("Entering stage {name}");
-        } else {
-            info!("Entering unnamed stage");
-        }
+        info!("Entering stage {}", self.name);
 
         for command in &mut self.entry {
             command.send_generic();

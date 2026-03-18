@@ -3,23 +3,26 @@ pub mod config;
 pub mod controller;
 pub mod input;
 pub mod peripheral;
+pub mod web_server;
 
-use crate::{
-    config::{Config, args::parse_args},
-    input::temperature::init_temperature,
-};
+use std::fs::File;
+use std::io::Write as _;
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use color_eyre::eyre::Result;
 use schemars::schema_for;
-use std::{
-    fs::File,
-    io::Write as _,
-    time::{SystemTime, UNIX_EPOCH},
-};
-use tracing::{info, level_filters::LevelFilter, trace};
-use tracing_subscriber::{
-    EnvFilter, Layer as _, Registry, fmt::layer, layer::SubscriberExt as _,
-    util::SubscriberInitExt as _,
-};
+use tokio::select;
+use tracing::level_filters::LevelFilter;
+use tracing::{info, trace};
+use tracing_subscriber::fmt::layer;
+use tracing_subscriber::layer::SubscriberExt as _;
+use tracing_subscriber::util::SubscriberInitExt as _;
+use tracing_subscriber::{EnvFilter, Layer as _, Registry};
+
+use crate::config::Config;
+use crate::config::args::parse_args;
+use crate::input::temperature::init_temperature;
+use crate::web_server::server::Server;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -55,7 +58,14 @@ async fn main() -> Result<()> {
     init_temperature(temperature_path);
 
     let controller = controller_desc.initialize();
-    controller.run().await;
+
+    let server_join = start_server();
+    let controller_join = controller.run();
+
+    select! {
+        () = controller_join => (), // TODO: Add useful info logging here
+        () = server_join => (),
+    }
 
     Ok(())
 }
@@ -86,4 +96,9 @@ fn init_logging() {
         .unwrap();
 
     trace!("Initialized logging");
+}
+
+fn start_server() -> impl Future<Output = ()> {
+    let server = Server::new();
+    server.run()
 }

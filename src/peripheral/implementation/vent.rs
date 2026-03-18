@@ -1,15 +1,15 @@
 use std::time::Duration;
 
-use crate::peripheral::{
-    Peripheral,
-    implementation::pin::{Pin, PinState},
-    peripheral_command::PeripheralCommand,
-};
 use derive_more::{Deref, Display, From};
 use schemars::JsonSchema;
 use serde::Deserialize;
-use tokio::{select, time::Instant};
+use tokio::select;
+use tokio::time::Instant;
 use tracing::{debug, error};
+
+use crate::peripheral::Peripheral;
+use crate::peripheral::implementation::pin::{Pin, PinState};
+use crate::peripheral::peripheral_command::PeripheralCommand;
 
 #[derive(Debug)]
 pub struct Vent {

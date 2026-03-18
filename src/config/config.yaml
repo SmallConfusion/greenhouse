@@ -4,15 +4,16 @@ temperature_path: "temp.txt"
 
 controller_desc:
   peripherals:
-    pin0: [0, Off]
-    pin1: [1, Off]
+    pin0: [ 0, Off ]
+    pin1: [ 1, Off ]
     vent0:
       - off: 3
         on: 4
       - 10
 
   stage_sets:
-    - stages:
+    - name: "Main Set"
+      stages:
         - name: "Stage A"
           condition:
             start: 20
@@ -30,7 +31,8 @@ controller_desc:
           settings:
             pin0: On
 
-    - stages:
+    - name: "Other Set"
+      stages:
         - name: "Stage C"
           condition:
             start: 30

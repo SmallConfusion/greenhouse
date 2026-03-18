@@ -1,8 +1,10 @@
-use crate::peripheral::peripheral_command::PeripheralCommand;
-use derive_more::Constructor;
 use std::fmt::Debug;
+
+use derive_more::Constructor;
 use tokio::sync::watch::Sender;
 use tracing::error;
+
+use crate::peripheral::peripheral_command::PeripheralCommand;
 
 #[derive(Debug, Constructor)]
 pub struct CommandPreset<T: PeripheralCommand> {

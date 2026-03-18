@@ -3,9 +3,12 @@ pub mod implementation;
 pub mod peripheral_command;
 pub mod running_peripheral;
 
-use crate::peripheral::peripheral_command::PeripheralCommand;
 use std::fmt::Debug;
-use tokio::{sync::watch::Receiver, task::JoinHandle};
+
+use tokio::sync::watch::Receiver;
+use tokio::task::JoinHandle;
+
+use crate::peripheral::peripheral_command::PeripheralCommand;
 
 pub trait Peripheral: Debug + 'static {
     type Command: PeripheralCommand;

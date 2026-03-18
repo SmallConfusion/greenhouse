@@ -1,14 +1,12 @@
-use crate::peripheral::peripheral_command::AnyCommand;
-use crate::peripheral::{
-    command_preset::{CommandPreset, GenericCommand},
-    Peripheral,
-};
 use std::any::type_name;
-use tokio::{
-    sync::watch::{channel, Sender},
-    task::JoinHandle,
-};
+
+use tokio::sync::watch::{Sender, channel};
+use tokio::task::JoinHandle;
 use tracing::error;
+
+use crate::peripheral::Peripheral;
+use crate::peripheral::command_preset::{CommandPreset, GenericCommand};
+use crate::peripheral::peripheral_command::AnyCommand;
 
 pub struct RunningPeripheral<T: Peripheral> {
     sender: Sender<T::Command>,

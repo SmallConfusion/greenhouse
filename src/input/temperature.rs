@@ -1,7 +1,5 @@
-use std::{
-    sync::{Mutex, OnceLock},
-    time::{Duration, Instant},
-};
+use std::sync::{Mutex, OnceLock};
+use std::time::{Duration, Instant};
 
 use tracing::{debug, error, warn};
 
@@ -81,6 +79,7 @@ impl Temperature {
 ///
 /// Will panic if already set.
 pub fn init_temperature(path: String) {
+    // TODO: Add server info sending here
     TEMPERATURE
         .set(Mutex::new(Temperature::new(path)))
         .expect("Temperature already initialized.");

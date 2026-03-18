@@ -16,6 +16,7 @@ codegen-units = 1
 panic = "abort"
 
 [dependencies]
+axum = "0.8.8"
 clap = { version = "4.6.0", features = ["derive"] }
 color-eyre = "0.6.5"
 derive_more = { version = "2.1.1", features = ["constructor", "deref", "display", "from"] }

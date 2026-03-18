@@ -1,11 +1,12 @@
-use crate::{
-    config::description::{ControllerDesc, SettingDesc},
-    controller::{Controller, stage::Stage, stage_set::StageSet},
-};
 use std::collections::{HashMap, HashSet};
+
 use tracing::error;
 
 use super::description::ConditionDesc;
+use crate::config::description::{ControllerDesc, SettingDesc};
+use crate::controller::Controller;
+use crate::controller::stage::Stage;
+use crate::controller::stage_set::StageSet;
 
 impl ControllerDesc {
     pub fn initialize(self) -> Controller {
@@ -59,8 +60,9 @@ impl ControllerDesc {
                     default_commands,
                     None,
                     None,
-                    Some("Internal Default Stage".into()),
+                    format!("Default Stage for {}", stage_set.name.clone()),
                 ),
+                stage_set.name,
             ));
         }
 

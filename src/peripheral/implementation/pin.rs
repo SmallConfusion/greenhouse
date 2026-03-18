@@ -1,10 +1,13 @@
-use crate::{peripheral::Peripheral, peripheral::peripheral_command::PeripheralCommand};
 use derive_more::Display;
 use rppal::gpio::{Gpio, OutputPin};
 use schemars::JsonSchema;
 use serde::Deserialize;
-use tokio::{sync::watch::Receiver, task::JoinHandle};
+use tokio::sync::watch::Receiver;
+use tokio::task::JoinHandle;
 use tracing::{debug, error, info};
+
+use crate::peripheral::Peripheral;
+use crate::peripheral::peripheral_command::PeripheralCommand;
 
 #[derive(Debug, Deserialize, JsonSchema, Clone, Copy, Display, PartialEq, Eq)]
 pub enum PinState {

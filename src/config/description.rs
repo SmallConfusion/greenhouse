@@ -1,19 +1,17 @@
-use crate::peripheral::peripheral_command::AnyCommand;
-use crate::{
-    condition::{implementation::temperature::TemperatureRange, Condition},
-    peripheral::{
-        implementation::{
-            pin::{Pin, PinState},
-            vent::{Vent, VentState},
-        },
-        running_peripheral::{GenericPeripheral, RunningPeripheral},
-        Peripheral,
-    },
-};
+use std::collections::HashMap;
+use std::ops::Range;
+
 use schemars::JsonSchema;
 use serde::Deserialize;
-use std::{collections::HashMap, ops::Range};
 use tokio::task::JoinHandle;
+
+use crate::condition::Condition;
+use crate::condition::implementation::temperature::TemperatureRange;
+use crate::peripheral::Peripheral;
+use crate::peripheral::implementation::pin::{Pin, PinState};
+use crate::peripheral::implementation::vent::{Vent, VentState};
+use crate::peripheral::peripheral_command::AnyCommand;
+use crate::peripheral::running_peripheral::{GenericPeripheral, RunningPeripheral};
 
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct ControllerDesc {
@@ -37,6 +35,7 @@ pub struct VentDesc {
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct StageSetDesc {
     pub stages: Vec<StageDesc>,
+    pub name: String,
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]
@@ -44,7 +43,7 @@ pub struct StageDesc {
     pub settings: HashMap<String, SettingDesc>,
     pub condition: ConditionDesc,
     pub exit_condition: Option<ConditionDesc>,
-    pub name: Option<String>,
+    pub name: String,
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]

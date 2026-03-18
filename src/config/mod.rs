@@ -2,11 +2,13 @@ pub mod args;
 pub mod convert;
 pub mod description;
 
-use std::{fs::File, io::BufReader};
+use std::fs::File;
+use std::io::BufReader;
 
-use crate::config::description::ControllerDesc;
 use schemars::JsonSchema;
 use serde::Deserialize;
+
+use crate::config::description::ControllerDesc;
 
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct Config {

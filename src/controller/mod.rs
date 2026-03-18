@@ -1,11 +1,13 @@
 pub mod stage;
 pub mod stage_set;
 
-use crate::controller::stage_set::StageSet;
 use derive_more::Constructor;
-use futures::{StreamExt as _, stream::FuturesUnordered};
+use futures::StreamExt as _;
+use futures::stream::FuturesUnordered;
 use tokio::task::JoinHandle;
 use tracing::error;
+
+use crate::controller::stage_set::StageSet;
 
 #[derive(Debug, Constructor)]
 pub struct Controller {
