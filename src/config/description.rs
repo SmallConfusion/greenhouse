@@ -1,17 +1,18 @@
+use crate::peripheral::peripheral_command::AnyCommand;
 use crate::{
-    condition::{Condition, implementation::temperature::TemperatureRange},
+    condition::{implementation::temperature::TemperatureRange, Condition},
     peripheral::{
-        Peripheral,
         implementation::{
             pin::{Pin, PinState},
             vent::{Vent, VentState},
         },
         running_peripheral::{GenericPeripheral, RunningPeripheral},
+        Peripheral,
     },
 };
 use schemars::JsonSchema;
 use serde::Deserialize;
-use std::{any::Any, collections::HashMap, ops::Range};
+use std::{collections::HashMap, ops::Range};
 use tokio::task::JoinHandle;
 
 #[derive(Debug, Deserialize, JsonSchema)]
@@ -81,10 +82,10 @@ impl PeripheralDesc {
 }
 
 impl SettingDesc {
-    pub fn into_any(self) -> Box<dyn Any> {
+    pub fn into_any(self) -> AnyCommand {
         match self {
-            Self::Pin(inner) => Box::new(inner),
-            Self::Vent(inner) => Box::new(inner),
+            Self::Pin(inner) => AnyCommand::new(inner),
+            Self::Vent(inner) => AnyCommand::new(inner),
         }
     }
 }

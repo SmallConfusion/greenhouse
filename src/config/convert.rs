@@ -36,10 +36,10 @@ impl ControllerDesc {
                         continue;
                     };
 
-                    let value = stage.settings.remove(name);
-                    let generic_value = value.map(SettingDesc::into_any);
+                    let command_desc = stage.settings.remove(name);
+                    let generic_command = command_desc.map(SettingDesc::into_any);
 
-                    let command = peripheral.create_command(generic_value);
+                    let command = peripheral.create_command(generic_command);
                     stage_commands.push(command);
 
                     default_commands.push(peripheral.create_command(None));

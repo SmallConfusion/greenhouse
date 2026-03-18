@@ -1,9 +1,9 @@
 use std::time::Duration;
 
 use crate::peripheral::{
+    Peripheral,
     implementation::pin::{Pin, PinState},
     peripheral_command::PeripheralCommand,
-    Peripheral,
 };
 use derive_more::{Deref, Display, From};
 use schemars::JsonSchema;

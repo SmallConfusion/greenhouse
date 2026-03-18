@@ -1,10 +1,11 @@
+use crate::peripheral::peripheral_command::AnyCommand;
 use crate::peripheral::{
-    Peripheral,
     command_preset::{CommandPreset, GenericCommand},
+    Peripheral,
 };
-use std::any::Any;
+use std::any::type_name;
 use tokio::{
-    sync::watch::{Sender, channel},
+    sync::watch::{channel, Sender},
     task::JoinHandle,
 };
 use tracing::error;
@@ -25,16 +26,23 @@ impl<T: Peripheral> RunningPeripheral<T> {
 }
 
 pub trait GenericPeripheral {
-    fn create_command(&self, command_opt: Option<Box<dyn Any>>) -> Box<dyn GenericCommand>;
+    fn create_command(&self, command_opt: Option<AnyCommand>) -> Box<dyn GenericCommand>;
 }
 
 impl<T: Peripheral> GenericPeripheral for RunningPeripheral<T> {
-    fn create_command(&self, command_opt: Option<Box<dyn Any>>) -> Box<dyn GenericCommand> {
+    fn create_command(&self, command_opt: Option<AnyCommand>) -> Box<dyn GenericCommand> {
         let new_value = command_opt
-            .and_then(|command_dyn| {
-                command_dyn
+            .and_then(|command_any| {
+                command_any
+                    .into_any()
                     .downcast::<T::Command>()
-                    .inspect_err(|_| error!("Mismatched types"))
+                    .inspect_err(|_| {
+                        error!(
+                            "Mismatched types! {} needs a command of type {}.",
+                            type_name::<T>(),
+                            type_name::<T::Command>()
+                        );
+                    })
                     .map(|command| *command)
                     .ok()
             })
