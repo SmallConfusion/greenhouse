@@ -79,7 +79,6 @@ impl Temperature {
 ///
 /// Will panic if already set.
 pub fn init_temperature(path: String) {
-    // TODO: Add server info sending here
     TEMPERATURE
         .set(Mutex::new(Temperature::new(path)))
         .expect("Temperature already initialized.");

@@ -10,22 +10,22 @@ use std::fs::File;
 use std::io::Write as _;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use axum::serve::Serve;
 use axum::Router;
+use axum::serve::Serve;
 use color_eyre::eyre::Result;
 use schemars::schema_for;
 use tokio::net::TcpListener;
 use tokio::select;
 use tracing::level_filters::LevelFilter;
-use tracing::{info, trace};
+use tracing::{error, info, trace};
 use tracing_subscriber::fmt::layer;
 use tracing_subscriber::layer::SubscriberExt as _;
 use tracing_subscriber::util::SubscriberInitExt as _;
 use tracing_subscriber::{EnvFilter, Layer as _, Registry};
 use web_server::data::InfoChannel;
 
-use crate::config::args::parse_args;
 use crate::config::Config;
+use crate::config::args::parse_args;
 use crate::input::temperature::init_temperature;
 use crate::web_server::server::Server;
 
@@ -68,8 +68,8 @@ async fn main() -> Result<()> {
     let controller_join = controller.run(info_channel);
 
     select! {
-        () = controller_join => (), // TODO: Add useful info logging here
-        _ = server_join => (),
+        () = controller_join => error!("Controller loop ended"),
+        _ = server_join => error!("Server ended"),
     }
 
     Ok(())
