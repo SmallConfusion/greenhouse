@@ -1,8 +1,8 @@
 use std::fs;
 
-use axum::Router;
 use axum::routing::get;
 use axum::serve::Serve;
+use axum::Router;
 use tokio::net::TcpListener;
 use tracing::info;
 
@@ -26,7 +26,7 @@ impl Server {
             get(async move || {
                 format!(
                     "Stage set states:
-{:?}
+{:#?}
 
 Last temperature: {} \u{00B0}F
 
