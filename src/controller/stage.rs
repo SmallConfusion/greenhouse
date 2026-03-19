@@ -28,7 +28,7 @@ pub struct Stage {
 
 impl Display for Stage {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Stage {}", self.name)
+        write!(f, "Stage(\"{}\")", self.name)
     }
 }
 
@@ -43,7 +43,7 @@ impl Condition for Option<Box<dyn Condition>> {
 
 impl Stage {
     pub fn enter(&mut self) {
-        info!("Entering stage {}", self.name);
+        info!("Entering {}", self);
 
         for command in &mut self.entry {
             command.send_generic();
@@ -59,5 +59,9 @@ impl Stage {
             || self.condition.is_met(),
             |stay_condition| stay_condition.is_met(),
         )
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
     }
 }

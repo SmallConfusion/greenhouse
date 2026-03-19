@@ -5,12 +5,13 @@ pub mod input;
 pub mod peripheral;
 pub mod web_server;
 
+use std::fs;
 use std::fs::File;
 use std::io::Write as _;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use axum::Router;
 use axum::serve::Serve;
+use axum::Router;
 use color_eyre::eyre::Result;
 use schemars::schema_for;
 use tokio::net::TcpListener;
@@ -23,8 +24,8 @@ use tracing_subscriber::util::SubscriberInitExt as _;
 use tracing_subscriber::{EnvFilter, Layer as _, Registry};
 use web_server::data::InfoChannel;
 
-use crate::config::Config;
 use crate::config::args::parse_args;
+use crate::config::Config;
 use crate::input::temperature::init_temperature;
 use crate::web_server::server::Server;
 
@@ -80,7 +81,9 @@ fn init_logging() {
         .unwrap()
         .as_secs();
 
-    let log_file = File::create(format!("log{file_number}.txt")).unwrap();
+    // We don't care if this fails because of a missing file. This could fail other ways, but I'm not handling that right now.
+    let _move_result = fs::rename("log.txt", format!("log{file_number}.txt"));
+    let log_file = File::create("log.txt").unwrap();
 
     let stdout_layer = tracing_subscriber::fmt::layer()
         .with_line_number(true)
@@ -91,7 +94,7 @@ fn init_logging() {
     let file_layer = layer()
         .with_writer(log_file)
         .with_ansi(false)
-        .with_filter(LevelFilter::INFO);
+        .with_filter(LevelFilter::WARN);
 
     Registry::default()
         .with(stdout_layer)

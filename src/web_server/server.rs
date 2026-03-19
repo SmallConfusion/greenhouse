@@ -1,3 +1,5 @@
+use std::fs;
+
 use axum::Router;
 use axum::routing::get;
 use axum::serve::Serve;
@@ -26,9 +28,15 @@ impl Server {
                     "Stage set states:
 {:?}
 
-Last temperature: {} \u{00B0}F",
+Last temperature: {} \u{00B0}F
+
+Log:
+{}
+",
                     self.data.set_states.read().await,
-                    get_temperature()
+                    get_temperature(),
+                    fs::read_to_string("log.txt")
+                        .unwrap_or_else(|err| format!("Error getting log: {err}"))
                 )
             }),
         );

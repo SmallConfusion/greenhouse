@@ -33,8 +33,10 @@ impl StageSet {
 
                     entry_stage.enter();
 
-                    info_handle
-                        .send_info(Info::StateEnter(self.name.clone(), entry_stage.to_string()));
+                    info_handle.send_info(Info::StateEnter(
+                        self.name.clone(),
+                        entry_stage.name().to_owned(),
+                    ));
 
                     while !entry_stage.should_exit() {
                         tokio::time::sleep(Duration::new(1, 0)).await;
@@ -45,7 +47,7 @@ impl StageSet {
 
                         info_handle.send_info(Info::StateEnter(
                             self.name.clone(),
-                            self.default.to_string(),
+                            self.default.name().to_owned(),
                         ));
 
                         self.is_in_default = true;
