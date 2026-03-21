@@ -7,7 +7,7 @@ pub struct Args {
     #[arg(short, long)]
     pub schema: bool,
 
-    /// Outputs a template config file, this implies -s as well.
+    /// Outputs a template config file.
     #[arg(short, long)]
     pub template: bool,
 

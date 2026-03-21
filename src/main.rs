@@ -7,7 +7,6 @@ pub mod web_server;
 
 use std::fs;
 use std::fs::File;
-use std::io::Write as _;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use axum::Router;
@@ -17,7 +16,7 @@ use schemars::schema_for;
 use tokio::net::TcpListener;
 use tokio::select;
 use tracing::level_filters::LevelFilter;
-use tracing::{error, info, trace};
+use tracing::{error, trace};
 use tracing_subscriber::fmt::layer;
 use tracing_subscriber::layer::SubscriberExt as _;
 use tracing_subscriber::util::SubscriberInitExt as _;
@@ -36,18 +35,14 @@ async fn main() -> Result<()> {
 
     let args = parse_args();
 
-    if args.schema | args.template {
-        info!("Writing schema file to config.schema.json");
+    if args.schema {
         let schema = serde_json::to_string(&schema_for!(Config))?;
-        write!(File::create("config.schema.json")?, "{schema}")?;
-        println!("Wrote schema file to config.schema.json");
+        println!("{schema}");
     }
 
     if args.template {
-        info!("Writing template config file to config.yaml");
         let content = include_str!("config/config.yaml");
-        write!(File::create_new("config.yaml")?, "{content}")?;
-        println!("Wrote template config file to config.yaml");
+        println!("{content}");
     }
 
     if args.schema || args.template {
