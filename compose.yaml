@@ -4,11 +4,14 @@ services:
     environment:
       RUST_LOG: "debug"
     volumes:
-      - ./config.yaml:/app/config.yaml
+      - ./config.yaml:/app/config.yaml:ro
+      - /:/host:ro
     logging:
       options:
         max-size: "10m"
         max-file: "3"
+    ports:
+      - "8000:8000"
 
     restart: always
     devices:

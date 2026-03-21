@@ -45,7 +45,7 @@ impl Temperature {
                 }
             };
 
-            let temp_val: i32 = match temp_str.parse() {
+            let temp_val: i32 = match temp_str.trim().parse() {
                 Ok(val) => val,
                 Err(err) => {
                     warn!(
