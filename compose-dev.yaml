@@ -1,11 +1,11 @@
 services:
   controller:
-    image: ghcr.io/smallconfusion/greenhouse
+    image: ghcr.io/smallconfusion/greenhouse:latest
     environment:
       RUST_LOG: "debug"
       TZ: "America/Chicago"
     volumes:
-      - ./config.yaml:/app/config.yaml
+      - ./config.yaml:/app/config.yaml:ro
       - /:/host:ro
     logging:
       options:
@@ -14,5 +14,5 @@ services:
     ports:
       - "8000:8000"
 
-    # restart:
-    devices: []
+#    restart: always
+#    privileged: true

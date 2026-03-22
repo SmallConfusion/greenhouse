@@ -47,8 +47,8 @@ impl Pin {
     pub fn set(&mut self, state: &PinState) {
         if let Some(pin) = self.pin.as_mut() {
             match state {
-                PinState::Off => pin.set_high(),
-                PinState::On => pin.set_low(),
+                PinState::Off => pin.set_low(),
+                PinState::On => pin.set_high(),
             }
         } else {
             error!("{self} is not initialized");
@@ -65,10 +65,7 @@ impl Peripheral for Pin {
         tokio::spawn(async move {
             loop {
                 if let Err(err) = receiver.changed().await {
-                    error!(
-                        "Pin {}'s async loop receiver returned an error: {err}",
-                        self.index
-                    );
+                    error!("{self}'s async loop receiver returned an error: {err}",);
                     return;
                 }
 

@@ -1,6 +1,6 @@
 services:
   controller:
-    image: ghcr.io/smallconfusion/greenhouse
+    image: ghcr.io/smallconfusion/greenhouse:latest
     environment:
       RUST_LOG: "debug"
       TZ: "America/Chicago"
@@ -15,7 +15,4 @@ services:
       - "8000:8000"
 
     restart: always
-    devices:
-      - "/dev/gpiomem:/dev/gpiomem"
-      - "/dev/gpieochip0:/dev/gpieochip0"
-      - "/dev/gpieochip4:/dev/gpieochip4"
+    privileged: true
