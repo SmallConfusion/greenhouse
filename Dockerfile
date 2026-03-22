@@ -6,4 +6,4 @@ WORKDIR /app
 
 COPY ./target/aarch64-unknown-linux-musl/release/greenhouse .
 
-CMD ["./greenhouse"]
+CMD ["./greenhouse", "-r"]

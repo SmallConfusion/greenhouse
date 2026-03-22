@@ -35,18 +35,32 @@ async fn main() -> Result<()> {
 
     let args = parse_args();
 
+    #[allow(clippy::useless_let_if_seq, reason = "Bad suggestion")]
+    let mut printed = false;
+
     if args.schema {
         let schema = serde_json::to_string(&schema_for!(Config))?;
         println!("{schema}");
+        printed = true;
     }
 
     if args.template {
         let content = include_str!("config/config.yaml");
         println!("{content}");
+        printed = true;
     }
 
-    if args.schema || args.template {
-        println!("Did config stuff, not running. Run without -s or -t to run controller");
+    if args.compose {
+        let content = include_str!("../compose.yaml");
+        println!("{content}");
+        printed = true;
+    }
+
+    if !args.run_controller {
+        if !printed {
+            println!("Run with -r to run the controller");
+        }
+
         return Ok(());
     }
 
