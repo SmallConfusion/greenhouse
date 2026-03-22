@@ -5,13 +5,9 @@ use schemars::JsonSchema;
 use serde::Deserialize;
 use tokio::task::JoinHandle;
 
-use crate::condition::Condition;
-use crate::condition::implementation::temperature::TemperatureRange;
-use crate::peripheral::Peripheral;
-use crate::peripheral::implementation::pin::{Pin, PinState};
-use crate::peripheral::implementation::vent::{Vent, VentState};
-use crate::peripheral::peripheral_command::AnyCommand;
-use crate::peripheral::running_peripheral::{GenericPeripheral, RunningPeripheral};
+use crate::condition::{Condition, TemperatureRange};
+use crate::peripheral::implementation::{Pin, PinState, Vent, VentState};
+use crate::peripheral::{AnyCommand, GenericPeripheral, Peripheral, RunningPeripheral};
 
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct ControllerDesc {

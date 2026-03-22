@@ -3,7 +3,7 @@ use std::ops::Range;
 use derive_more::Constructor;
 
 use crate::condition::Condition;
-use crate::input::temperature::get_temperature;
+use crate::input::get_temperature;
 
 #[derive(Debug, Constructor)]
 pub struct TemperatureRange {

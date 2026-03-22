@@ -8,7 +8,7 @@ use tokio::time::Instant;
 use tracing::{debug, error};
 
 use crate::peripheral::Peripheral;
-use crate::peripheral::implementation::pin::{Pin, PinState};
+use crate::peripheral::implementation::{Pin, PinState};
 use crate::peripheral::peripheral_command::PeripheralCommand;
 
 #[derive(Debug)]

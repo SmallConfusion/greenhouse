@@ -1,14 +1,15 @@
-pub mod command_preset;
+mod command_preset;
 pub mod implementation;
-pub mod peripheral_command;
-pub mod running_peripheral;
+mod peripheral_command;
+mod running_peripheral;
 
 use std::fmt::Debug;
 
+pub use command_preset::*;
+pub use peripheral_command::*;
+pub use running_peripheral::*;
 use tokio::sync::watch::Receiver;
 use tokio::task::JoinHandle;
-
-use crate::peripheral::peripheral_command::PeripheralCommand;
 
 pub trait Peripheral: Debug + 'static {
     type Command: PeripheralCommand;

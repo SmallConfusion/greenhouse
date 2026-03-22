@@ -4,9 +4,7 @@ use tracing::error;
 
 use super::description::ConditionDesc;
 use crate::config::description::{ControllerDesc, SettingDesc};
-use crate::controller::Controller;
-use crate::controller::stage::Stage;
-use crate::controller::stage_set::StageSet;
+use crate::controller::{Controller, Stage, StageSet};
 
 impl ControllerDesc {
     pub fn initialize(self) -> Controller {

@@ -4,9 +4,8 @@ use tokio::sync::watch::{Sender, channel};
 use tokio::task::JoinHandle;
 use tracing::error;
 
-use crate::peripheral::Peripheral;
-use crate::peripheral::command_preset::{CommandPreset, GenericCommand};
 use crate::peripheral::peripheral_command::AnyCommand;
+use crate::peripheral::{CommandPreset, GenericCommand, Peripheral};
 
 pub struct RunningPeripheral<T: Peripheral> {
     sender: Sender<T::Command>,

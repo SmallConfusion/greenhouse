@@ -21,12 +21,11 @@ use tracing_subscriber::fmt::layer;
 use tracing_subscriber::layer::SubscriberExt as _;
 use tracing_subscriber::util::SubscriberInitExt as _;
 use tracing_subscriber::{EnvFilter, Layer as _, Registry};
-use web_server::data::InfoChannel;
+use web_server::InfoChannel;
 
-use crate::config::Config;
-use crate::config::args::parse_args;
-use crate::input::temperature::init_temperature;
-use crate::web_server::server::Server;
+use crate::config::{Config, parse_args};
+use crate::input::init_temperature;
+use crate::web_server::Server;
 
 #[tokio::main]
 async fn main() -> Result<()> {

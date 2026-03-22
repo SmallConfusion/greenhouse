@@ -5,7 +5,7 @@ use never::Never;
 use tracing::info;
 
 use crate::condition::Condition;
-use crate::peripheral::command_preset::GenericCommand;
+use crate::peripheral::GenericCommand;
 
 impl Condition for Never {
     fn is_met(&self) -> bool {

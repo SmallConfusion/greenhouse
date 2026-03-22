@@ -2,8 +2,8 @@ use std::time::Duration;
 
 use tokio::task::JoinHandle;
 
-use crate::controller::stage::Stage;
-use crate::web_server::data::{Info, InfoChannel};
+use crate::controller::Stage;
+use crate::web_server::{Info, InfoChannel};
 
 #[derive(Debug)]
 pub struct StageSet {

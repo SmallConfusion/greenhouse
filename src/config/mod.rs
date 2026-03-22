@@ -1,10 +1,11 @@
-pub mod args;
-pub mod convert;
+mod args;
+mod convert;
 pub mod description;
 
 use std::fs::File;
 use std::io::BufReader;
 
+pub use args::*;
 use schemars::JsonSchema;
 use serde::Deserialize;
 

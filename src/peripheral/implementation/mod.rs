@@ -1,2 +1,5 @@
-pub mod pin;
-pub mod vent;
+mod pin;
+mod vent;
+
+pub use pin::*;
+pub use vent::*;

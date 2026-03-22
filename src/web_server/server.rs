@@ -6,8 +6,8 @@ use axum::serve::Serve;
 use tokio::net::TcpListener;
 use tracing::info;
 
-use crate::input::temperature::get_temperature;
-use crate::web_server::data::{InfoChannel, ServerData};
+use crate::input::get_temperature;
+use crate::web_server::{InfoChannel, ServerData};
 
 #[derive(Default)]
 pub struct Server {
