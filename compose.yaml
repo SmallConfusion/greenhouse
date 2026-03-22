@@ -3,6 +3,7 @@ services:
     image: ghcr.io/smallconfusion/greenhouse
     environment:
       RUST_LOG: "debug"
+      TZ: "America/Chicago"
     volumes:
       - ./config.yaml:/app/config.yaml:ro
       - /:/host:ro
