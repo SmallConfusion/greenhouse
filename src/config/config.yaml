@@ -1,42 +1,69 @@
 # yaml-language-server: $schema=config.schema.json
 
-temperature_path: "temp.txt"
+temperature_path: "/host/sys/bus/w1/devices/28-000000baf13f/temperature"
 
 controller_desc:
   peripherals:
-    pin0: [ 0, Off ]
-    pin1: [ 1, Off ]
-    vent0:
-      - off: 3
-        on: 4
-      - 10
+    heater: [11, Off]
+
+    fan1: [14, Off]
+    fan2: [15, Off]
+
+    main_vent:
+      - on: 12
+        off: 13
+      - 0.0
 
   stage_sets:
     - name: "Main Set"
       stages:
-        - name: "Stage A"
+        - name: "Heating"
           condition:
-            start: 20
-            end: 30
-          settings:
-            pin1: On
-
-        - name: "Stage B"
-          condition:
-            start: 30
-            end: 40
+            type: TempRange
+            start: -999.0
+            end: 58.0
           exit_condition:
-            start: 30
-            end: 42
+            type: TempRange
+            start: -999.0
+            end: 60.0
           settings:
-            pin0: On
+            heater: On
 
-    - name: "Other Set"
-      stages:
-        - name: "Stage C"
+        - name: "Cooling 1"
           condition:
-            start: 30
-            end: 50
+            type: TempRange
+            start: 76.0
+            end: 78.0
+          exit_condition:
+            type: TempRange
+            start: 74.0
+            end: 78.0
           settings:
-            vent0: 20.0
-            pin1: On
+            main_vent: 30.0
+
+        - name: "Cooling 2"
+          condition:
+            type: TempRange
+            start: 78.0
+            end: 80.0
+          exit_condition:
+            type: TempRange
+            start: 76.0
+            end: 80.0
+          settings:
+            main_vent: 60.0
+            fan1: On
+
+        - name: "Cooling 3"
+          condition:
+            type: TempRange
+            start: 80.0
+            end: 999.0
+          exit_condition:
+            type: TempRange
+            start: 78.0
+            end: 999.0
+          settings:
+            fan1: On
+            fan2: On
+            main_vent: 120.0

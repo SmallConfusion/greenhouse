@@ -5,3 +5,7 @@
 
 .vscode/
 .idea/
+
+# Testing and building
+scripts
+temp.txt

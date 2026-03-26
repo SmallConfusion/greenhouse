@@ -5,7 +5,7 @@ use schemars::JsonSchema;
 use serde::Deserialize;
 use tokio::task::JoinHandle;
 
-use crate::condition::{Condition, TemperatureRange};
+use crate::condition::{Condition, TemperatureRange, TimeRange};
 use crate::peripheral::implementation::{Pin, PinState, Vent, VentState};
 use crate::peripheral::{AnyCommand, GenericPeripheral, Peripheral, RunningPeripheral};
 
@@ -50,9 +50,23 @@ pub enum SettingDesc {
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]
-#[serde(untagged)]
+pub struct TimeDesc {
+    pub hours: u8,
+    pub minutes: u8,
+}
+
+#[derive(Debug, Deserialize, JsonSchema)]
+#[serde(rename = "TimeRange")]
+pub struct TimeRangeDesc {
+    pub start: TimeDesc,
+    pub end: TimeDesc,
+}
+
+#[derive(Debug, Deserialize, JsonSchema)]
+#[serde(tag = "type")]
 pub enum ConditionDesc {
     TempRange(Range<f32>),
+    TimeRange(TimeRangeDesc),
 }
 
 impl PeripheralDesc {
@@ -86,9 +100,15 @@ impl SettingDesc {
 }
 
 impl ConditionDesc {
+    /// # Panics
+    ///
+    /// Panics if a time is incorrectly formatted.
     pub fn into_generic(self) -> Box<dyn Condition> {
         match self {
             Self::TempRange(range) => Box::new(TemperatureRange::new(range)),
+            Self::TimeRange(desc) => {
+                Box::new(TimeRange::try_from(desc).expect("Can't parse time from config."))
+            }
         }
     }
 }

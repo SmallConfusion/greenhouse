@@ -1,7 +1,7 @@
 use std::sync::{Mutex, OnceLock};
 use std::time::{Duration, Instant};
 
-use tracing::{debug, error, warn};
+use tracing::{error, trace, warn};
 
 static TEMPERATURE: OnceLock<Mutex<Temperature>> = OnceLock::new();
 
@@ -45,11 +45,13 @@ impl Temperature {
                 }
             };
 
-            let temp_val: i32 = match temp_str.trim().parse() {
+            let temp_str_trim = temp_str.trim();
+
+            let temp_val: i32 = match temp_str_trim.parse() {
                 Ok(val) => val,
                 Err(err) => {
                     warn!(
-                        "Cannot parse i32 from {temp_str}, read from {}: {err}; retrying in one second",
+                        "Cannot parse i32 from {temp_str_trim}, read from {}: {err}; retrying in one second",
                         self.path
                     );
                     std::thread::sleep(Duration::new(1, 0));
@@ -68,7 +70,7 @@ impl Temperature {
                 time: Instant::now(),
             });
 
-            debug!("Read temperature {temp_str}/1000 \u{00B0}C, {fahrenheit}, \u{00B0}F");
+            trace!("Read temperature {temp_str_trim}/1000 \u{00B0}C, {fahrenheit}, \u{00B0}F");
 
             return fahrenheit;
         }

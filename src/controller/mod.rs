@@ -18,7 +18,7 @@ pub struct Controller {
 }
 
 impl Controller {
-    pub async fn run(mut self, info_channel: InfoChannel) {
+    pub async fn run(mut self, info_channel: InfoChannel) -> ! {
         for set in self.stage_sets {
             self.join_handles.push(set.run(info_channel.clone()));
         }
@@ -29,10 +29,12 @@ impl Controller {
             futures.push(handle);
         }
 
-        futures.next().await;
+        loop {
+            futures.next().await;
 
-        error!(
-            "One of our async tasks has ended. This could be because a defined pin was not used or it could be because of a horrible error"
-        );
+            error!(
+                "One of our async tasks has ended. This could be because a defined pin was not used or it could be because of a horrible error"
+            );
+        }
     }
 }

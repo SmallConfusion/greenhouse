@@ -1,6 +1,6 @@
 services:
   controller:
-    image: ghcr.io/smallconfusion/greenhouse:latest
+    image: ghcr.io/smallconfusion/greenhouse
     environment:
       RUST_LOG: "debug"
       TZ: "America/Chicago"
