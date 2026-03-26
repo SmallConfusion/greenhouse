@@ -39,16 +39,18 @@ impl Peripheral for Vent {
                 }
 
                 let new_state = *receiver.borrow();
-                debug!("Vent {self} received command {new_state}");
+                debug!("{self} received command {new_state}");
 
                 let diff = *new_state - *self.current_state;
                 let dist = diff.abs();
 
-                let pin = if diff > 0.0 {
-                    &mut self.on
-                } else {
-                    &mut self.off
-                };
+                if dist < 0.5 {
+                    continue;
+                }
+
+                let opening = diff > 0.0;
+
+                let pin = if opening { &mut self.on } else { &mut self.off };
 
                 let start_time = Instant::now();
                 pin.set(&PinState::On);
@@ -62,7 +64,11 @@ impl Peripheral for Vent {
 
                 pin.set(&PinState::Off);
 
-                self.current_state.0 += moved_time.as_secs_f32();
+                if opening {
+                    self.current_state.0 += moved_time.as_secs_f32();
+                } else {
+                    self.current_state.0 -= moved_time.as_secs_f32();
+                }
             }
         })
     }

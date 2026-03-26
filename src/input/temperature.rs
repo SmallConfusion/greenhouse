@@ -70,7 +70,7 @@ impl Temperature {
                 time: Instant::now(),
             });
 
-            trace!("Read temperature {temp_str_trim}/1000 \u{00B0}C, {fahrenheit}, \u{00B0}F");
+            trace!("Read temperature {temp_str_trim}/1000 \u{00B0}C, {fahrenheit} \u{00B0}F");
 
             return fahrenheit;
         }
